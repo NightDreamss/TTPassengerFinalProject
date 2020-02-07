@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PhoneNumber">
+
+    <ImageView
+        android:id="@+id/phone_number_activity_header_image"
+        android:layout_width="115dp"
+        android:layout_height="110dp"
+        android:contentDescription="@string/sub_logo"
+        android:elevation="1dp"
+        android:outlineProvider="none"
+        android:src="@drawable/ic_sublogo"
+        android:transitionName="@string/register_account_logo_transition"
+        app:layout_constraintBottom_toTopOf="@+id/phone_number_text_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/passenger_account_back_button"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="10dp"
+        android:background="@drawable/circle_layout_passenger"
+        android:contentDescription="@string/close_button"
+        android:elevation="10dp"
+        android:src="@drawable/ic_close"
+        android:tint="@color/whitePurple"
+        app:layout_constraintBottom_toTopOf="@+id/phone_number_text_title"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/phone_number_activity_layout"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
+        android:contentDescription="@string/container"
+        android:src="@drawable/login_background"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@id/imageView" />
+
+    <TextView
+        android:id="@+id/phone_number_text_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:fontFamily="serif"
+        android:text="@string/verify_phone_number"
+        android:textColor="@color/whitePurple"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/phone_number_activity_layout"
+        app:layout_constraintStart_toStartOf="@+id/phone_number_activity_layout"
+        app:layout_constraintTop_toTopOf="@+id/phone_number_activity_layout" />
+
+    <RelativeLayout
+        android:id="@+id/phone_number_activity_phone_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="@+id/phone_number_activity_layout"
+        app:layout_constraintTop_toBottomOf="@+id/phone_number_text_title">
+
+        <ImageView
+            android:id="@+id/phone_number_activity_phone_img"
+            android:layout_width="35dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="5dp"
+            android:layout_centerVertical="true"
+            android:contentDescription="@string/phone_icon"
+            android:src="@drawable/ic_phone"
+            android:tint="@color/colorAccent" />
+
+        <com.hbb20.CountryCodePicker
+            android:id="@+id/phone_number_activity_ccp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/phone_number_activity_phone_img"
+            app:ccpDialog_backgroundColor="@color/colorPrimary"
+            app:ccpDialog_textColor="@color/whitePurple"
+            app:ccp_contentColor="@color/whitePurple"
+            app:ccp_customMasterCountries="TT"
+            app:ccp_defaultNameCode="TT"
+            app:ccp_showFlag="false"
+            app:ccp_textSize="20sp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/phone_number_activity_phone_input"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/phone_number_activity_ccp"
+            android:maxWidth="190dp"
+            android:minWidth="190dp"
+            android:theme="@style/Theme.AppCompat"
+            app:errorEnabled="true"
+            app:errorTextColor="@color/error">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/phone_number_activity_phone_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="10dp"
+                android:hint="@string/mobile_phone_number"
+                android:imeOptions="actionNext"
+                android:inputType="phone"
+                android:maxLength="12"
+                android:textColor="@color/whitePurple"
+                android:textSize="20sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/phone_number_activity_button"
+        style="@style/AppTheme.RoundedCornerMaterialButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:text="@string/continue_button"
+        android:textColor="@color/whitePurple"
+        android:textSize="17sp"
+        app:layout_constraintEnd_toEndOf="@+id/phone_number_activity_layout"
+        app:layout_constraintStart_toStartOf="@+id/phone_number_activity_layout"
+        app:layout_constraintTop_toBottomOf="@+id/phone_number_activity_phone_layout" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_marginBottom="80dp"
+        android:src="@drawable/ic_phonenumber"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

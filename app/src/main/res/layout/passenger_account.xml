@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PassengerAccount">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/passenger_account_container_form_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="30dp"
+            android:background="@drawable/login_background"
+            android:backgroundTint="@color/colorPrimary"
+            android:elevation="5dp"
+            android:orientation="vertical"
+            android:paddingTop="30dp"
+            android:paddingBottom="30dp">
+
+            <ScrollView
+                android:id="@+id/passenger_account_scrollview_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbarSize="10dp"
+                android:fadeScrollbars="false"
+                android:scrollbarThumbVertical="@color/colorAccent">
+
+                <LinearLayout
+                    android:id="@+id/passenger_account_form_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp">
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/passenger_account_profile_image"
+                            android:layout_width="90dp"
+                            android:layout_height="90dp"
+                            android:layout_centerHorizontal="true"
+                            android:src="@drawable/profile_image" />
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_below="@+id/passenger_account_profile_image"
+                            android:layout_marginStart="-35dp"
+                            android:layout_marginTop="-35dp"
+                            android:layout_toEndOf="@+id/passenger_account_profile_image"
+                            android:src="@drawable/ic_photo"
+                            app:civ_border_color="@color/colorAccent"
+                            app:civ_border_width="4.5dp"
+                            app:civ_circle_background_color="@color/colorAccent" />
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/passenger_account_profile_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentBottom="true"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginBottom="84dp"
+                            android:layout_marginTop="15dp"
+                            android:theme="@style/Theme.AppCompat"
+                            app:errorEnabled="true"
+                            app:errorTextColor="@color/error">
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp">
+
+                        <ImageView
+                            android:id="@+id/passenger_account_username_img"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="10dp"
+                            android:contentDescription="@string/full_name_icon"
+                            android:src="@drawable/ic_profile"
+                            android:tint="@color/colorAccent" />
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/passenger_account_username_input_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="20dp"
+                            android:layout_toEndOf="@+id/passenger_account_username_img"
+                            android:textColorHint="@color/whitePurple"
+                            android:theme="@style/Theme.AppCompat"
+                            app:counterEnabled="true"
+                            app:counterMaxLength="15"
+                            app:errorEnabled="true"
+                            app:errorTextColor="@color/error">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/passenger_account_username_field"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginEnd="30dp"
+                                android:layout_toEndOf="@+id/passenger_account_username_img"
+                                android:backgroundTint="@color/whitePurple"
+                                android:hint="@string/real_name"
+                                android:textSize="18sp"
+                                android:imeOptions="actionNext"
+                                android:inputType="textPersonName"
+                                android:maxLength="15"
+                                android:textColor="@color/whitePurple"
+                                android:textColorHint="@color/whitePurple" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+            </ScrollView>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/passenger_account_container_form_layout"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="-60dp"
+            android:elevation="10dp"
+            android:outlineProvider="none">
+
+            <Button
+                android:id="@+id/passenger_create_account_button"
+                style="@style/AppTheme.RoundedCornerMaterialButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="30dp"
+                android:paddingEnd="30dp"
+                android:text="@string/create_account"
+                android:textColor="@color/whitePurple"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</FrameLayout>

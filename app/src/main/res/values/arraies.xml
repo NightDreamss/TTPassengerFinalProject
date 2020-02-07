@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="vehicles">
+        <item>Taxi 4 Seats</item>
+        <item>Taxi 6 Seats</item>
+        <item>Maxi</item>
+    </string-array>
+
+    <string-array name="hiretime">
+        <item>Drop off</item>
+        <item>2 Way trip</item>
+        <item>Stay and wait</item>
+        <item>Whole day</item>
+    </string-array>
+
+    <string-array name="seatnumbers">
+        <item>1 Seat</item>
+        <item>2 Seats</item>
+        <item>3 Seats</item>
+        <item>4 Seats</item>
+        <item>5 Seats</item>
+        <item>6 Seats</item>
+        <item>7 Seats</item>
+        <item>7+ Seats</item>
+    </string-array>
+
+    <string-array name="route">
+        <item>Aranguez</item>
+        <item>Arena</item>
+        <item>Arouca</item>
+        <item>Arquart/Urquart Village</item>
+        <item>Auzonville</item>
+        <item>Avocat</item>
+        <item>Balmain</item>
+        <item>Bamboo Village</item>
+        <item>Bangladesh</item>
+        <item>Barataria</item>
+        <item>Barrackpore</item>
+        <item>Basta Hall</item>
+        <item>Beetham Estate Gardens</item>
+        <item>Belmont</item>
+        <item>Ben Lomond</item>
+        <item>Biche</item>
+        <item>Blanchisseuse</item>
+        <item>Boissiere Village</item>
+        <item>Bonasse</item>
+        <item>Bonne Aventure</item>
+        <item>Borde Narve Village</item>
+        <item>Bourg Mulatresse</item>
+        <item>Brasso</item>
+        <item>Brasso Seco</item>
+        <item>Brazil</item>
+        <item>Brickfield</item>
+        <item>Brighton</item>
+        <item>Buen Intento Village</item>
+        <item>Buenos Ayres</item>
+        <item>Caigual</item>
+        <item>Calcutta Settlement</item>
+        <item>California</item>
+        <item>Canaan</item>
+        <item>Cantaro</item>
+        <item>Carapichaima</item>
+        <item>Carenage</item>
+        <item>Carli Bay</item>
+        <item>Carlsen Field</item>
+        <item>Cascade</item>
+        <item>Caura</item>
+        <item>Cedar Hill Village</item>
+        <item>Cedros</item>
+        <item>Centeno</item>
+        <item>Chaguaramas</item>
+        <item>Champs Fleurs</item>
+        <item>Chandernagore Village</item>
+        <item>Charuma</item>
+        <item>Chase Village</item>
+        <item>Chatham</item>
+        <item>Churkoo Village</item>
+        <item>Claxton Bay</item>
+        <item>Cocorite</item>
+        <item>Cocoyea Village</item>
+        <item>Congo Village</item>
+        <item>Coryal</item>
+        <item>Cumaca</item>
+        <item>Cumuto</item>
+        <item>Cunupia</item>
+        <item>Curepe</item>
+        <item>Cushe</item>
+        <item>D Abadie</item>
+        <item>Debe</item>
+        <item>Diamond Village</item>
+        <item>Dibe</item>
+        <item>Dinsley</item>
+        <item>Dow Village, California</item>
+        <item>Dow Village, Siparia</item>
+        <item>Duncan Village</item>
+        <item>Ecclesville</item>
+        <item>Eckel Village</item>
+        <item>Edinburgh</item>
+        <item>El Dorado</item>
+        <item>El Socorro</item>
+        <item>Endeavour</item>
+        <item>Enterprise</item>
+        <item>Erin</item>
+        <item>Exchange</item>
+        <item>Felicity</item>
+        <item>Fifth Company</item>
+        <item>Fishing Pond</item>
+        <item>Flanigin Town</item>
+        <item>Forres Park</item>
+        <item>Four Roads</item>
+        <item>Frederick Settlement</item>
+        <item>Freeport</item>
+        <item>Friendship Village</item>
+        <item>Fullarton</item>
+        <item>Fyzabad</item>
+        <item>Gasparillo</item>
+        <item>Glencoe</item>
+        <item>Golconda</item>
+        <item>Gonzales</item>
+        <item>Goodwood Park</item>
+        <item>Gopaul Lands</item>
+        <item>Gran Couva</item>
+        <item>Grande Riviere</item>
+        <item>Guaico</item>
+        <item>Guanapo</item>
+        <item>Guapo</item>
+        <item>Guayaguayare</item>
+        <item>Gulf View</item>
+        <item>Hardbargin</item>
+        <item>Hindustan</item>
+        <item>Icacos</item>
+        <item>Iere Village</item>
+        <item>Indian Chain</item>
+        <item>Indian Walk</item>
+        <item>Jerningham Junction</item>
+        <item>John John</item>
+        <item>Jordan Hill</item>
+        <item>Kelly Village</item>
+        <item>Kernaham/Kernahan</item>
+        <item>Kumar Village</item>
+        <item>L Anse Mitan</item>
+        <item>La Brea</item>
+        <item>La Canoa</item>
+        <item>La Horquetta</item>
+        <item>La Paille</item>
+        <item>La Romaine</item>
+        <item>Las Cuevas</item>
+        <item>Las Lomas</item>
+        <item>Laventille</item>
+        <item>Lengua</item>
+        <item>Longdenville</item>
+        <item>Lopinot</item>
+        <item>Los Bajos</item>
+        <item>Macoya</item>
+        <item>Madras Settlement</item>
+        <item>Mairao Village</item>
+        <item>Malabar</item>
+        <item>Malick</item>
+        <item>Manzanilla</item>
+        <item>Marabella</item>
+        <item>Maracas</item>
+        <item>Maraval</item>
+        <item>Matelot</item>
+        <item>Matura</item>
+        <item>Mausica</item>
+        <item>Mayo</item>
+        <item>Mc Bean</item>
+        <item>Mohammedville</item>
+        <item>Mon Repos</item>
+        <item>Monkey Town</item>
+        <item>Montrose</item>
+        <item>Montserrat</item>
+        <item>Morne Diablo</item>
+        <item>Moruga</item>
+        <item>Morvant</item>
+        <item>Mount D Or</item>
+        <item>Mount Lambert</item>
+        <item>Mount Stewart</item>
+        <item>Mucurapo</item>
+        <item>Navet</item>
+        <item>New Grant</item>
+        <item>O Meara</item>
+        <item>Orange Field</item>
+        <item>Orange Valley</item>
+        <item>Oropouche</item>
+        <item>Oropune Village</item>
+        <item>Otaheite</item>
+        <item>Palmyra</item>
+        <item>Palo Seco</item>
+        <item>Patna Village</item>
+        <item>Pembroke</item>
+        <item>Penal Rock</item>
+        <item>Petit Trou</item>
+        <item>Petit Valley</item>
+        <item>Phoenix Park</item>
+        <item>Piarco</item>
+        <item>Pierreville</item>
+        <item>Piparo</item>
+        <item>Plaisance</item>
+        <item>Plaisance Park</item>
+        <item>Point Lisas</item>
+        <item>Pointe-à-Pierre</item>
+        <item>Poole</item>
+        <item>Preysal</item>
+        <item>Quarry Village</item>
+        <item>Quinam</item>
+        <item>Rampanalgas</item>
+        <item>Rancho Quemado</item>
+        <item>Ravin Anglais</item>
+        <item>Redhead</item>
+        <item>Rio Claro</item>
+        <item>Roussillac</item>
+        <item>Saint Madeleine</item>
+        <item>San Francique</item>
+        <item>San Raphael</item>
+        <item>Sangre Chiquito</item>
+        <item>Sans Souci</item>
+        <item>Santa Cruz</item>
+        <item>Santa Flora</item>
+        <item>Santa Margarita</item>
+        <item>Santa Rosa</item>
+        <item>Savonetta</item>
+        <item>South Oropouche</item>
+        <item>St. Anns</item>
+        <item>St. Augustine</item>
+        <item>St. Barbs</item>
+        <item>St. Clair</item>
+        <item>St. Helena</item>
+        <item>St. James</item>
+        <item>St. Joseph</item>
+        <item>St. Marys</item>
+        <item>Straker Village</item>
+        <item>Syne Village</item>
+        <item>Tabaquite</item>
+        <item>Tacarigua</item>
+        <item>Talparo</item>
+        <item>Teschier Village</item>
+        <item>Thick Village</item>
+        <item>Third Company</item>
+        <item>Toco</item>
+        <item>Tortuga</item>
+        <item>Trincity</item>
+        <item>Trou Macaque</item>
+        <item>Union Village</item>
+        <item>Valencia</item>
+        <item>Valsayn</item>
+        <item>Vega de Oropouche</item>
+        <item>Vessigny</item>
+        <item>Vistabella</item>
+        <item>Waterloo</item>
+        <item>Westmoorings</item>
+        <item>Whiteland</item>
+        <item>Williamsville</item>
+    </string-array>
+</resources>

@@ -1,4 +1,4 @@
-package com.nightdream.ttpassenger;
+package com.nightdream.ttpassenger.login;
 
 
 import android.Manifest;
@@ -40,6 +40,8 @@ import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.nightdream.ttpassenger.NavigationView;
+import com.nightdream.ttpassenger.R;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
@@ -56,7 +58,6 @@ import id.zelory.compressor.Compressor;
 public class PassengerAccount extends Fragment {
 
     private int STORAGE_PERMISSION_CODE = 100;
-    private int SELECT_IMAGE_PERMISSION_CODE = 200;
     private View passengerAccount;
     private Button create_account;
     private CircleImageView profile_image;
@@ -153,7 +154,7 @@ public class PassengerAccount extends Fragment {
                             File file = new File(resultUri.getPath());
 
                             try {
-                                bitmap = new Compressor(Objects.requireNonNull(getContext())).setMaxWidth(150).setMaxHeight(150).compressToBitmap(file);
+                                bitmap = new Compressor(requireContext()).setMaxWidth(150).setMaxHeight(150).compressToBitmap(file);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -193,7 +194,7 @@ public class PassengerAccount extends Fragment {
                                                                             public void onComplete(@NonNull Task<Void> task) {
                                                                                 if (task.isSuccessful()) {
 
-                                                                                    Intent intent = new Intent(getContext(), NavigatorScreen.class);
+                                                                                    Intent intent = new Intent(getContext(), NavigationView.class);
                                                                                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                                                                     startActivity(intent);
 
@@ -209,7 +210,7 @@ public class PassengerAccount extends Fragment {
                                                                 public void onComplete(@NonNull Task<Void> task) {
                                                                     if (task.isSuccessful()) {
 
-                                                                        Intent intent = new Intent(getContext(), NavigatorScreen.class);
+                                                                        Intent intent = new Intent(getContext(), NavigationView.class);
                                                                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                                                         startActivity(intent);
 
@@ -252,7 +253,7 @@ public class PassengerAccount extends Fragment {
             @Override
             public void onClick(View v) {
 
-                if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity()), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
                     TedBottomPicker.with(getActivity()).
                             setCameraTileBackgroundResId(R.color.colorAccent)
@@ -277,7 +278,7 @@ public class PassengerAccount extends Fragment {
 
     private void requestStoragePermission() {
 
-        if (ActivityCompat.shouldShowRequestPermissionRationale(Objects.requireNonNull(getActivity()), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 
             new AlertDialog.Builder(getContext())
                     .setTitle("Permission Required")

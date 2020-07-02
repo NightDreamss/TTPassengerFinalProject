@@ -4,7 +4,11 @@
     package="com.nightdream.ttpassenger">
 
     <uses-feature android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -12,30 +16,40 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".NavigatorScreen"></activity>
+        <activity android:name=".Riding"></activity>
+        <activity
+            android:name=".QrCodeHandler"
+            android:label="@string/title_activity_qr_code_handler"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyD5S4QPKgZE7QYeypMF5SUy_I0Bz3_da0I" />
+
+        <activity android:name=".NavigationView" />
         <activity
             android:name="com.google.firebase.auth.internal.FederatedSignInActivity"
             android:launchMode="standard"
             tools:replace="android:launchMode" />
-        <activity android:name=".VerifyPhoneNumber" />
-        <activity android:name=".PhoneNumber" />
-        <activity android:name=".Register" />
-        <activity android:name=".WelcomeScreen">
+        <activity android:name=".login.VerifyPhoneNumber" />
+        <activity android:name=".login.PhoneNumber" />
+        <activity android:name=".login.Register" />
+        <activity android:name=".login.WelcomeScreen">
             <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".SplashScreen"
+            android:name=".login.SplashScreen"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,6 +57,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="fullSensor"
+            tools:replace="screenOrientation" />
+
+        <service android:name=".TheAddress" />
     </application>
 
 </manifest>

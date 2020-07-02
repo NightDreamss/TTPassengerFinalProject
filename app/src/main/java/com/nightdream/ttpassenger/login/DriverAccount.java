@@ -1,4 +1,4 @@
-package com.nightdream.ttpassenger;
+package com.nightdream.ttpassenger.login;
 
 
 import android.Manifest;
@@ -40,6 +40,8 @@ import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.nightdream.ttpassenger.NavigationView;
+import com.nightdream.ttpassenger.R;
 import com.squareup.picasso.Picasso;
 import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder;
 
@@ -47,6 +49,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import gun0912.tedbottompicker.TedBottomPicker;
@@ -203,13 +206,13 @@ public class DriverAccount extends Fragment implements com.tsongkha.spinnerdatep
             @Override
             public void onClick(View v) {
 
-                showDate(1980, 0, 1, R.style.DatePickerSpinner);
+                showDate(2000, 0, 1, R.style.DatePickerSpinner);
 
             }
         });
     }
 
-    void showDate(int year, int monthOfYear, int dayOfMonth, int spinnerTheme) {
+    private void showDate(int year, int monthOfYear, int dayOfMonth, int spinnerTheme) {
         new SpinnerDatePickerDialogBuilder()
                 .context(getContext())
                 .callback((com.tsongkha.spinnerdatepicker.DatePickerDialog.OnDateSetListener) this)
@@ -223,7 +226,8 @@ public class DriverAccount extends Fragment implements com.tsongkha.spinnerdatep
     @Override
     public void onDateSet(com.tsongkha.spinnerdatepicker.DatePicker view, int year, int monthOfYear, int dayOfMonth) {
         monthOfYear = monthOfYear + 1;
-        dobEditText.setText(monthOfYear + "/" + dayOfMonth + "/" + year);
+        String results = monthOfYear + "/" + dayOfMonth + "/" + year;
+        dobEditText.setText(results);
     }
 
     private void bottomSheetGallery() {
@@ -232,7 +236,7 @@ public class DriverAccount extends Fragment implements com.tsongkha.spinnerdatep
             @Override
             public void onClick(View v) {
 
-                if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
                     TedBottomPicker.with(getActivity()).
                             setCameraTileBackgroundResId(R.color.colorAccent)
@@ -256,12 +260,12 @@ public class DriverAccount extends Fragment implements com.tsongkha.spinnerdatep
             @Override
             public void onClick(View v) {
 
-                phone = FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
+                phone = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getPhoneNumber();
                 username = usernameEditText.getText().toString().trim();
                 dob = dobEditText.getText().toString();
                 licence = licenceEditText.getText().toString().trim();
-                vehicle = jrSpinnerVehicle.getText().toString();
-                route = jrSpinnerRoute.getText().toString();
+                vehicle = Objects.requireNonNull(jrSpinnerVehicle.getText()).toString();
+                route = Objects.requireNonNull(jrSpinnerRoute.getText()).toString();
 
                 if (!TextUtils.isEmpty(username)) {
                     if (username.length() >= 3) {
@@ -270,7 +274,7 @@ public class DriverAccount extends Fragment implements com.tsongkha.spinnerdatep
                                 if (!TextUtils.isEmpty(vehicle)) {
                                     if (!TextUtils.isEmpty(route)) {
 
-                                        final String currentUser = mAuth.getCurrentUser().getUid();
+                                        final String currentUser = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
 
                                         if (!TextUtils.isEmpty(UncompressedImage)) {
 
@@ -278,7 +282,7 @@ public class DriverAccount extends Fragment implements com.tsongkha.spinnerdatep
                                             File file = new File(resultUri.getPath());
 
                                             try {
-                                                bitmap = new Compressor(getContext()).setMaxWidth(150).setMaxHeight(150).compressToBitmap(file);
+                                                bitmap = new Compressor(requireContext()).setMaxWidth(150).setMaxHeight(150).compressToBitmap(file);
                                             } catch (IOException e) {
                                                 e.printStackTrace();
                                             }
@@ -325,7 +329,7 @@ public class DriverAccount extends Fragment implements com.tsongkha.spinnerdatep
                                                                                                         @Override
                                                                                                         public void onComplete(@NonNull Task<Void> task) {
 
-                                                                                                            Intent intent = new Intent(getContext(), NavigatorScreen.class);
+                                                                                                            Intent intent = new Intent(getContext(), NavigationView.class);
                                                                                                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                                                                                             startActivity(intent);
 
@@ -346,7 +350,7 @@ public class DriverAccount extends Fragment implements com.tsongkha.spinnerdatep
                                                                                             @Override
                                                                                             public void onComplete(@NonNull Task<Void> task) {
 
-                                                                                                Intent intent = new Intent(getContext(), NavigatorScreen.class);
+                                                                                                Intent intent = new Intent(getContext(), NavigationView.class);
                                                                                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                                                                                 startActivity(intent);
 
@@ -423,7 +427,7 @@ public class DriverAccount extends Fragment implements com.tsongkha.spinnerdatep
 
     private void requestStoragePermission() {
 
-        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 
             new AlertDialog.Builder(getContext())
                     .setTitle("Permission Required")

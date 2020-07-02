@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PhoneNumber">
+    tools:context=".login.PhoneNumber">
 
     <ImageView
         android:id="@+id/phone_number_activity_header_image"

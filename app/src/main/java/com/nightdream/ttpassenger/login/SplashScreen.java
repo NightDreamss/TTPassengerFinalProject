@@ -1,4 +1,4 @@
-package com.nightdream.ttpassenger;
+package com.nightdream.ttpassenger.login;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,15 +15,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
+import com.nightdream.ttpassenger.NavigationView;
+import com.nightdream.ttpassenger.R;
 
 public class SplashScreen extends AppCompatActivity {
 
@@ -64,7 +63,7 @@ public class SplashScreen extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
 
-                        Intent intent = new Intent(SplashScreen.this, NavigatorScreen.class);
+                        Intent intent = new Intent(SplashScreen.this, NavigationView.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
                         finish();
@@ -75,7 +74,7 @@ public class SplashScreen extends AppCompatActivity {
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 if (dataSnapshot.exists()) {
 
-                                    Intent intent = new Intent(SplashScreen.this, NavigatorScreen.class);
+                                    Intent intent = new Intent(SplashScreen.this, NavigationView.class);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                     startActivity(intent);
                                     finish();
@@ -171,13 +170,12 @@ public class SplashScreen extends AppCompatActivity {
     }
 
     private void setupWindowAnimation() {
-        // inside your activity (if you did not enable transitions in your theme)
+
         Fade fade = new Fade();
         fade.setDuration(getResources().getInteger(R.integer.anim_duration_short));
         fade.excludeTarget(android.R.id.statusBarBackground, true);
         fade.excludeTarget(android.R.id.navigationBarBackground, true);
 
-        // set an exit transition
         getWindow().setEnterTransition(fade);
         getWindow().setExitTransition(fade);
         getWindow().setAllowEnterTransitionOverlap(false);

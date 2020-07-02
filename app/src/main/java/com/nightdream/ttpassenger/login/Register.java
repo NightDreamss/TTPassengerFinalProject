@@ -1,4 +1,4 @@
-package com.nightdream.ttpassenger;
+package com.nightdream.ttpassenger.login;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -6,13 +6,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
-import android.transition.Explode;
 import android.transition.Fade;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
+
+import com.nightdream.ttpassenger.R;
 
 public class Register extends AppCompatActivity {
 
@@ -80,7 +78,6 @@ public class Register extends AppCompatActivity {
 
     protected void setupWindowAnimations() {
 
-        //enter and exit transition for driver and passenger screen
         Fade fade = new Fade();
         fade.setDuration(getResources().getInteger(R.integer.anim_duration_short));
         fade.excludeTarget(android.R.id.statusBarBackground, true);

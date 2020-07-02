@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:id="@+id/splashscreen_container"
     android:visibility="invisible"
-    tools:context=".SplashScreen">
+    tools:context=".login.SplashScreen">
 
     <ImageView
         android:layout_width="350dp"

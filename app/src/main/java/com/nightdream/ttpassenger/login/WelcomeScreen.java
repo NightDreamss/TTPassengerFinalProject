@@ -1,4 +1,4 @@
-package com.nightdream.ttpassenger;
+package com.nightdream.ttpassenger.login;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityOptionsCompat;
@@ -9,6 +9,8 @@ import android.transition.Explode;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import com.nightdream.ttpassenger.R;
 
 public class WelcomeScreen extends AppCompatActivity {
 
@@ -47,7 +49,6 @@ public class WelcomeScreen extends AppCompatActivity {
 
     protected void setupWindowAnimations() {
 
-        //enter and exit transition for driver and passenger screen
         Explode explode = new Explode();
         explode.setDuration(getResources().getInteger(R.integer.anim_duration_short));
         explode.excludeTarget(android.R.id.statusBarBackground, true);

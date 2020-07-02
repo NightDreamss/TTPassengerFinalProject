@@ -36,9 +36,18 @@
     </style>
 
     <style name="DatePickerSpinner">
-    <item name="android:textSize">20sp</item>
-    <item name="android:textColorPrimary">@color/whitePurple</item>
-    <item name="android:colorControlNormal" tools:targetApi="lollipop">@color/colorAccent</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColorPrimary">@color/whitePurple</item>
+        <item name="android:colorControlNormal" tools:targetApi="lollipop">@color/colorAccent</item>
     </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>

@@ -1,4 +1,4 @@
-package com.nightdream.ttpassenger;
+package com.nightdream.ttpassenger.login;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.transition.Explode;
-import android.transition.Fade;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -34,6 +33,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.nightdream.ttpassenger.NavigationView;
+import com.nightdream.ttpassenger.R;
 
 import java.util.concurrent.TimeUnit;
 
@@ -170,7 +171,7 @@ public class VerifyPhoneNumber extends AppCompatActivity {
                                         DatabaseReference updateDriverToken = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(uID);
                                         updateDriverToken.child("device_token").setValue(deviceToken);
 
-                                        Intent intent = new Intent(VerifyPhoneNumber.this, NavigatorScreen.class);
+                                        Intent intent = new Intent(VerifyPhoneNumber.this, NavigationView.class);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                         startActivity(intent);
                                         finish();
@@ -185,7 +186,7 @@ public class VerifyPhoneNumber extends AppCompatActivity {
                                                     DatabaseReference updateDriverToken = FirebaseDatabase.getInstance().getReference().child("Users").child("Passenger").child(uID);
                                                     updateDriverToken.child("device_token").setValue(deviceToken);
 
-                                                    Intent intent = new Intent(VerifyPhoneNumber.this, NavigatorScreen.class);
+                                                    Intent intent = new Intent(VerifyPhoneNumber.this, NavigationView.class);
                                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                                     startActivity(intent);
                                                     finish();
@@ -226,7 +227,6 @@ public class VerifyPhoneNumber extends AppCompatActivity {
 
     protected void setupWindowAnimations() {
 
-        //enter and exit transition for driver and passenger screen
         Explode explode = new Explode();
         explode.setDuration(getResources().getInteger(R.integer.anim_duration_short));
         explode.excludeTarget(android.R.id.statusBarBackground, true);

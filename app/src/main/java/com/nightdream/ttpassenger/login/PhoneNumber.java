@@ -1,4 +1,4 @@
-package com.nightdream.ttpassenger;
+package com.nightdream.ttpassenger.login;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,6 +16,7 @@ import android.widget.ImageView;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.hbb20.CountryCodePicker;
+import com.nightdream.ttpassenger.R;
 
 public class PhoneNumber extends AppCompatActivity {
 
@@ -111,7 +112,6 @@ public class PhoneNumber extends AppCompatActivity {
 
     protected void setupWindowAnimations() {
 
-        //enter and exit transition for driver and passenger screen
         Explode explode = new Explode();
         explode.setDuration(getResources().getInteger(R.integer.anim_duration_short));
         explode.excludeTarget(android.R.id.statusBarBackground, true);

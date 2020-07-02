@@ -4,11 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DriverAccount">
+    tools:context=".login.DriverAccount">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:ignore="UselessParent">
 
         <LinearLayout
             android:id="@+id/driver_account_container_form_layout"
@@ -165,7 +166,7 @@
                                 android:layout_marginEnd="30dp"
                                 android:layout_toEndOf="@+id/driver_account_dob_img"
                                 android:clickable="true"
-                                android:focusable="false"
+                                android:focusable="true"
                                 android:focusableInTouchMode="false"
                                 android:hint="@string/date_of_birth"
                                 android:imeOptions="actionNext"
@@ -342,6 +343,7 @@
             android:layout_below="@+id/driver_account_container_form_layout"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="-60dp"
+            android:outlineProvider="none"
             android:elevation="10dp">
 
             <Button

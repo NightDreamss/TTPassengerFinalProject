@@ -9,6 +9,7 @@
     <string name="accept_continue"><![CDATA[Accept & Continue]]></string>
     <string name="logo">Logo</string>
     <string name="transition_layer">Transition layer</string>
+    <string name="mapboxToken">pk.eyJ1Ijoic3Z6eiIsImEiOiJja2J6Z3FjeWcwcmZsMnJwajI5bGZnbW13In0.m6vaO7YcdBl9tkl13HMJ8w</string>
     <string name="sub_logo">Sub Logo</string>
     <string name="close_button">Close Button</string>
     <string name="verify_phone_number">Enter Phone Number</string>
@@ -40,4 +41,24 @@
     <string name="background_image">background Image</string>
     <string name="eg_number">e.g. 868&#8211;111&#8211;1111</string>
     <string name="phone_error">Requires a valid Trinidad number</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="account">Account</string>
+    <string name="scan">Scan</string>
+    <string name="create_ride_session">create ride session</string>
+    <string name="user_location_permission_explanation">Require location permissions to locate user position</string>
+    <string name="user_location_permission_not_granted">Permissions not granted</string>
+    <string name="select_destination">Select Destination</string>
+    <string name="cancel_destination">Cancel Ride Request</string>
+    <string name="title_activity_qr_code_handler">QrCodeHandler</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="list_of_ride_request">List of Ride Request</string>
+    <string name="qr_code_for_passenger">QR Code for Passenger</string>
 </resources>

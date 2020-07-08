@@ -22,6 +22,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class ViewHolder extends FirebaseRecyclerAdapter<requestGetterSetter, ViewHolder.PastViewHolder> {
 
@@ -76,20 +77,17 @@ public class ViewHolder extends FirebaseRecyclerAdapter<requestGetterSetter, Vie
             database = FirebaseDatabase.getInstance();
             reference = database.getReference();
             mAuth = FirebaseAuth.getInstance();
-            uID = mAuth.getCurrentUser().getUid();
+            uID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
 
-            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    switch (which) {
-                        case DialogInterface.BUTTON_POSITIVE:
-                            transaction(v);
-                            break;
+            DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        transaction(v);
+                        break;
 
-                        case DialogInterface.BUTTON_NEGATIVE:
-                            Toast.makeText(v.getContext(), "Too bad...", Toast.LENGTH_SHORT).show();
-                            break;
-                    }
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        Toast.makeText(v.getContext(), "Too bad...", Toast.LENGTH_SHORT).show();
+                        break;
                 }
             };
 
@@ -101,21 +99,18 @@ public class ViewHolder extends FirebaseRecyclerAdapter<requestGetterSetter, Vie
 
     private void transaction(View v) {
         final HashMap<String, Object> sessionMap = new HashMap<>();
-        sessionMap.put("driver", uID);
-        sessionMap.put("status", "waiting");
+        sessionMap.put("driverId", uID);
+        sessionMap.put("status", "accepted");
 
-        reference.child("rideTransaction").child(id).updateChildren(sessionMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    startQrCode();
-                }
+        reference.child("taxiRequest").child(id).updateChildren(sessionMap).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                startQrCode();
             }
         });
     }
 
     private void startQrCode() {
-        Intent intent = new Intent(context, QrCodeHandler.class);
+        Intent intent = new Intent(context, QrCodeMap.class);
         intent.putExtra("keyId", id);
         context.startActivity(intent);
     }

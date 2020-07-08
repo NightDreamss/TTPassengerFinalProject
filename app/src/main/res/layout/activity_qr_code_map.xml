@@ -1,31 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:mapbox="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RequestRide">
+    tools:context=".QrCodeMap">
 
-    <Button
-        android:id="@+id/requestRide_destination_button"
-        style="@style/AppTheme.RoundedCornerMaterialButton"
+    <TextView
+        android:id="@+id/qr_code_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_marginBottom="40dp"
-        android:paddingStart="20dp"
-        android:paddingTop="10dp"
-        android:paddingEnd="20dp"
-        android:paddingBottom="10dp"
-        android:text="@string/select_destination"
-        android:textSize="20sp"
-        android:visibility="invisible" />
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/qr_code_for_passenger"
+        android:textColor="@color/black"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/qr_code_header">
+
+        <ImageView
+            android:id="@+id/qr_Code"
+            android:contentDescription="@string/qr_code_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </RelativeLayout>
 
     <com.mapbox.mapboxsdk.maps.MapView
-        android:id="@+id/mapView"
+        android:id="@+id/mapQrCode"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="invisible"
         mapbox:mapbox_cameraTargetLat="40.73581"
         mapbox:mapbox_cameraTargetLng="-73.99155"
         mapbox:mapbox_cameraZoom="14">
@@ -65,7 +79,7 @@
             </LinearLayout>
 
             <Button
-                android:id="@+id/requestRide_contacts_button"
+                android:id="@+id/qr_code_contacts_button"
                 style="@style/AppTheme.RoundedCornerMaterialButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -85,7 +99,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/requestRide_help_button"
+                android:id="@+id/driver_help_button"
                 style="@style/AppTheme.RoundedCornerMaterialButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -98,11 +112,10 @@
                 android:paddingEnd="10dp"
                 android:paddingBottom="10dp"
                 android:text="@string/emergency_call"
-                android:textSize="20sp"
-                android:visibility="invisible" />
+                android:textSize="20sp" />
 
             <Button
-                android:id="@+id/requestRide_share_button"
+                android:id="@+id/driver_share_button"
                 style="@style/AppTheme.RoundedCornerMaterialButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -115,10 +128,10 @@
                 android:paddingEnd="10dp"
                 android:paddingBottom="10dp"
                 android:text="@string/share"
-                android:textSize="20sp"
-                android:visibility="invisible" />
+                android:textSize="20sp" />
         </LinearLayout>
 
     </com.mapbox.mapboxsdk.maps.MapView>
 
-</FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,11 +1,14 @@
 package com.nightdream.ttpassenger;
 
+import androidx.annotation.NonNull;
+
 public class requestGetterSetter {
-    String clat, clng, dlat, dlng, cLocation, dLocation;
+    String clat, clng, dlat, dlng, cLocation, dLocation, passsengerId, driverId, status, driverLat, driverLng;
 
     public requestGetterSetter() {
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "requestGetterSetter{" +
@@ -15,7 +18,52 @@ public class requestGetterSetter {
                 ", dlng='" + dlng + '\'' +
                 ", cLocation='" + cLocation + '\'' +
                 ", dLocation='" + dLocation + '\'' +
+                ", passsengerId='" + passsengerId + '\'' +
+                ", driverId='" + driverId + '\'' +
+                ", status='" + status + '\'' +
+                ", driverLat='" + driverLat + '\'' +
+                ", driverLng='" + driverLng + '\'' +
                 '}';
+    }
+
+    public String getPasssengerId() {
+        return passsengerId;
+    }
+
+    public void setPasssengerId(String passsengerId) {
+        this.passsengerId = passsengerId;
+    }
+
+    public String getDriverId() {
+        return driverId;
+    }
+
+    public void setDriverId(String driverId) {
+        this.driverId = driverId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getDriverLat() {
+        return driverLat;
+    }
+
+    public void setDriverLat(String driverLat) {
+        this.driverLat = driverLat;
+    }
+
+    public String getDriverLng() {
+        return driverLng;
+    }
+
+    public void setDriverLng(String driverLng) {
+        this.driverLng = driverLng;
     }
 
     public String getClat() {

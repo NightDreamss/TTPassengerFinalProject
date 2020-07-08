@@ -52,13 +52,19 @@
     <string name="cancel_destination">Cancel Ride Request</string>
     <string name="title_activity_qr_code_handler">QrCodeHandler</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
-
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="list_of_ride_request">List of Ride Request</string>
     <string name="qr_code_for_passenger">QR Code for Passenger</string>
+    <string name="emergency_call">SOS Message</string>
+    <string name="share">Share Ride</string>
+    <string name="contacts">Contacts</string>
+    <string name="accept">Accept</string>
+    <string name="decline">Decline</string>
+    <string name="back_arrow">back arrow</string>
+    <string name="back">Back</string>
+    <string name="my_contact">My Contact</string>
+    <string name="add_contact">Add Contact</string>
+    <string name="back_to_map">Go Back to Ride Request</string>
+    <string name="qr_code_image">Qr Code Image</string>
 </resources>

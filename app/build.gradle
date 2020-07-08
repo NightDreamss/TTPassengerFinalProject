@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     buildToolsVersion "28.0.3"
     defaultConfig {
         applicationId "com.nightdream.ttpassenger"
         minSdkVersion 24
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -67,9 +67,6 @@ dependencies {
     //ImagePicker
     implementation 'gun0912.ted:tedbottompicker:2.0.1'
 
-    //Toast
-    implementation 'org.aviran.cookiebar2:cookiebar2:1.1.3'
-
     //Search Spinner
     implementation 'com.github.jrizani:JRSpinner:androidx-SNAPSHOT'
 
@@ -78,6 +75,7 @@ dependencies {
 
     //Mapbox
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.2.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.8.0'
 
     //QR Code scanner
     implementation 'com.journeyapps:zxing-android-embedded:4.1.0'

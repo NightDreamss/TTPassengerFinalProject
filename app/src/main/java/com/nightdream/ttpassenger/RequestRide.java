@@ -21,10 +21,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,6 +32,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.mapbox.android.core.location.LocationEngine;
+import com.mapbox.android.core.location.LocationEngineCallback;
+import com.mapbox.android.core.location.LocationEngineProvider;
+import com.mapbox.android.core.location.LocationEngineRequest;
+import com.mapbox.android.core.location.LocationEngineResult;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.geojson.Feature;
@@ -49,15 +53,20 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.module.http.HttpRequestUtil;
+import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+import com.nightdream.ttpassenger.Contacts.ContactsLayout;
 
-import org.aviran.cookiebar2.CookieBar;
-
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
+import static android.os.Looper.getMainLooper;
 import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
 import static com.mapbox.mapboxsdk.style.layers.Property.NONE;
 import static com.mapbox.mapboxsdk.style.layers.Property.VISIBLE;
@@ -70,17 +79,18 @@ import static java.util.Objects.requireNonNull;
 
 public class RequestRide extends Fragment implements OnMapReadyCallback, PermissionsListener {
 
+    private static final String ID_ICON_DRIVER_LOCATION = "driverLocation";
     private static final int REQUEST_PERMISSION_LOCATION = 101;
     private View requestRideView;
-    private Button requestbtn;
+    private Button requestbtn, sharebtn, contactbtn, emgbtn;
     private boolean locationValue;
+    public static String keyId;
     private Location location, cLocation;
     private String uID, dGeoLocation, cGeoLocation, decrypted_qrCode, sharedQrCode, qr_code_generated_text;
     private TextView name, user_type;
     private ResultReceiver receiver;
+    private Symbol driverLocationSymbol;
 
-    //Firebase
-    private FirebaseAuth mAuth;
     private DatabaseReference reference;
 
     //Mapbox
@@ -88,40 +98,50 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
     private MapboxMap mapboxMap;
     private PermissionsManager permissionsManager;
     private LocationComponent locationComponent;
-    // variables for calculating and drawing a route
-    private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
-    private String geojsonSourceLayerId = "geojsonSourceLayerId";
     private static final LatLng BOUND_CORNER_NW = new LatLng(10.854214, -60.880062);
     private static final LatLng BOUND_CORNER_SE = new LatLng(10.033263, -61.957491);
     private static final LatLngBounds RESTRICTED_BOUNDS_AREA = new LatLngBounds.Builder().include(BOUND_CORNER_NW).include(BOUND_CORNER_SE).build();
     private ImageView hoveringMarker;
     private static final String DROPPED_MARKER_LAYER_ID = "DROPPED_MARKER_LAYER_ID";
-
+    private static final long DEFAULT_INTERVAL_IN_MILLISECONDS = 1000L;
+    private static final long DEFAULT_MAX_WAIT_TIME = DEFAULT_INTERVAL_IN_MILLISECONDS * 5;
+    private RequestRide.RequestRideLocationCallback callback =
+            new RequestRide.RequestRideLocationCallback(this);
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Mapbox.getInstance(getContext(), getString(R.string.mapboxToken));
+        Mapbox.getInstance(requireContext(), getString(R.string.mapboxToken));
         requestRideView = inflater.inflate(R.layout.fragment_request_ride, container, false);
 
         variables();
         databaseVariables();
+        contactPage();
         return requestRideView;
+    }
+
+    private void contactPage() {
+        contactbtn.setOnClickListener(v -> {
+        Intent intent = new Intent(getContext(), ContactsLayout.class);
+        startActivity(intent);
+        });
     }
 
     private void databaseVariables() {
 
         //Firebase
-        mAuth = FirebaseAuth.getInstance();
+        //Firebase
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference();
-        uID = mAuth.getCurrentUser().getUid();
+        uID = requireNonNull(mAuth.getCurrentUser()).getUid();
 
         reference.child("Users").child("Passenger").child(uID).addValueEventListener(new ValueEventListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
 
-                    String userName = requireNonNull(dataSnapshot.child("name").getValue()).toString();
-                    name.setText(userName);
+                    Object userName = dataSnapshot.child("name").getValue();
+                    name.setText(String.valueOf(userName));
                     user_type.setText("Passenger");
                 }
             }
@@ -137,6 +157,9 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
         name = requestRideView.findViewById(R.id.account_name);
         user_type = requestRideView.findViewById(R.id.account_type);
         requestbtn = requestRideView.findViewById(R.id.requestRide_destination_button);
+        sharebtn = requestRideView.findViewById(R.id.requestRide_share_button);
+        contactbtn = requestRideView.findViewById(R.id.requestRide_contacts_button);
+        emgbtn = requestRideView.findViewById(R.id.requestRide_help_button);
         mapView = requestRideView.findViewById(R.id.mapView);
         receiver = new AddressResults(new Handler());
 
@@ -147,24 +170,90 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
-        mapboxMap.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
+        mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
+
+            //Checking for connection to mapbox when title update
+            HttpRequestUtil.setLogEnabled(false);
+
+            // Find user's location on map
+            enableLocationComponent(style);
+
+            // Set up restriction for map to prevent user for viewing outside trinidad
+            mapboxMap.setLatLngBoundsForCameraTarget(RESTRICTED_BOUNDS_AREA);
+
+            //Create drop marker
+            addDestinationIconSymbolLayer(style);
+
+            // Set up hovering marker for user to identify location of marker
+            hoveringMarkerPlacement(style);
+
+            // create symbol manager object
+            addDriverLocation(style);
+            SymbolManager driverLocation = new SymbolManager(mapView, mapboxMap, style);
+            DriverCurrentLocation(driverLocation);
+
+            driverLocationSymbol = driverLocation.create(new SymbolOptions()
+                    .withLatLng(new LatLng(11.100, -11.100))
+                    .withIconImage(ID_ICON_DRIVER_LOCATION)
+                    .withIconSize(0.6f));
+        });
+    }
+
+    private void addDriverLocation(Style style) {
+        style.addImage(ID_ICON_DRIVER_LOCATION,
+                Objects.requireNonNull(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_car_marker, null)));
+    }
+
+    private void DriverCurrentLocation(SymbolManager driverLocation) {
+        driverLocation.setIconAllowOverlap(true);
+        driverLocation.setIconIgnorePlacement(true);
+
+        reference.child("taxiRequest").addValueEventListener(new ValueEventListener() {
             @Override
-            public void onStyleLoaded(@NonNull Style style) {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                //Checking for connection to mapbox when title update
-                HttpRequestUtil.setLogEnabled(false);
+                if (snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
 
-                // Find user's location on map
-                enableLocationComponent(style);
+                        String key = dataSnapshot.getKey();
+                        Object statusValue = dataSnapshot.child("status").getValue();
+                        Object id = dataSnapshot.child("passengerId").getValue();
 
-                // Set up restriction for map to prevent user for viewing outside trinidad
-                mapboxMap.setLatLngBoundsForCameraTarget(RESTRICTED_BOUNDS_AREA);
+                        if (String.valueOf(statusValue).equals("riding")) {
+                            String.valueOf(statusValue);
+                            assert key != null;
+                            if (String.valueOf(id).equals(uID)) {
+                                String.valueOf(id);
+                                reference.child("realTimeTracking").child(key).addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        if (snapshot.exists()) {
+                                            if (snapshot.child("driverLocationLat").exists()) {
+                                                Object lat = snapshot.child("driverLocationLat").getValue();
+                                                String sLat = String.valueOf(lat);
+                                                Object lng = snapshot.child("driverLocationLng").getValue();
+                                                String sLng = String.valueOf(lng);
 
+                                                driverLocationSymbol.setLatLng(new LatLng(Double.parseDouble(sLat), Double.parseDouble(sLng)));
+                                                driverLocation.update(driverLocationSymbol);
+                                            }
+                                        }
+                                    }
 
-                addDestinationIconSymbolLayer(style);
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
 
-                // Set up hovering marker for user to identify location of marker
-                hoveringMarkerPlacement(style);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }
@@ -177,102 +266,106 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER);
         hoveringMarker.setLayoutParams(params);
         mapView.addView(hoveringMarker);
+        requestbtn.setVisibility(View.VISIBLE);
+        sharebtn.setVisibility(View.INVISIBLE);
+        emgbtn.setVisibility(View.INVISIBLE);
 
         // Initialize, but don't show, a SymbolLayer for the marker icon which will represent a selected location.
         initDroppedMarker(style);
 
         // Button to drop marker to set destination
-        requestbtn.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("UseRequireInsteadOfGet")
-            @Override
-            public void onClick(View view) {
+        requestbtn.setOnClickListener(view -> {
 
-                if (hoveringMarker.getVisibility() == View.VISIBLE) {
-                    // Use the map target's coordinates to make a reverse geocoding search
-                    final LatLng mapTargetLatLng = mapboxMap.getCameraPosition().target;
+            if (hoveringMarker.getVisibility() == View.VISIBLE) {
+                // Use the map target's coordinates to make a reverse geocoding search
+                final LatLng mapTargetLatLng = mapboxMap.getCameraPosition().target;
 
-                    // Hide the hovering red hovering ImageView marker
-                    hoveringMarker.setVisibility(View.INVISIBLE);
+                // Hide the hovering red hovering ImageView marker
+                hoveringMarker.setVisibility(View.INVISIBLE);
 
-                    // Transform the appearance of the button to become the cancel button
-                    requestbtn.setText(getString(R.string.cancel_destination));
+                // Transform the appearance of the button to become the cancel button
+                requestbtn.setText(getString(R.string.cancel_destination));
 
-                    // Show the SymbolLayer icon to represent the selected map location
-                    if (style.getLayer(DROPPED_MARKER_LAYER_ID) != null) {
-                        GeoJsonSource source = style.getSourceAs("dropped-marker-source-id");
-                        if (source != null) {
-                            source.setGeoJson(Feature.fromGeometry(Point.fromLngLat(
-                                    mapTargetLatLng.getLongitude(), mapTargetLatLng.getLatitude())));
-                        }
-                        requireNonNull(style.getLayer(DROPPED_MARKER_LAYER_ID)).setProperties(visibility(VISIBLE));
-
-                        if (ContextCompat.checkSelfPermission(requireNonNull(getContext()), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-                            return;
-                        }
-                        location = new Location("providerA");
-                        location.setLatitude(mapTargetLatLng.getLatitude());
-                        location.setLongitude(mapTargetLatLng.getLongitude());
-
-                        cLocation = new Location("providerN");
-                        assert locationComponent.getLastKnownLocation() != null;
-                        cLocation.setLatitude(locationComponent.getLastKnownLocation().getLatitude());
-                        cLocation.setLongitude(locationComponent.getLastKnownLocation().getLongitude());
-
-                        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            String[] permissionLocation = {Manifest.permission.ACCESS_FINE_LOCATION};
-
-                            requestPermissions(permissionLocation, REQUEST_PERMISSION_LOCATION);
-                        } else {
-                            locationValue = false;
-                            getAddress(location);
-
-                            final Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    locationValue = true;
-                                    getAddress(cLocation);
-                                }
-                            }, 3000);
-                        }
+                // Show the SymbolLayer icon to represent the selected map location
+                if (style.getLayer(DROPPED_MARKER_LAYER_ID) != null) {
+                    GeoJsonSource source = style.getSourceAs("dropped-marker-source-id");
+                    if (source != null) {
+                        source.setGeoJson(Feature.fromGeometry(Point.fromLngLat(
+                                mapTargetLatLng.getLongitude(), mapTargetLatLng.getLatitude())));
                     }
+                    requireNonNull(style.getLayer(DROPPED_MARKER_LAYER_ID)).setProperties(visibility(VISIBLE));
 
-                } else {
+                    if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-                    // Switch the button appearance back to select a location.
-                    requestbtn.setText(getString(R.string.select_destination));
-                    requestbtn.setTextColor(getResources().getColor(R.color.whitePurple));
-
-                    // Show the red hovering ImageView marker
-                    hoveringMarker.setVisibility(View.VISIBLE);
-
-                    // Hide the selected location SymbolLayer
-                    if (style.getLayer(DROPPED_MARKER_LAYER_ID) != null) {
-                        style.getLayer(DROPPED_MARKER_LAYER_ID).setProperties(visibility(NONE));
-                        removeRequest();
+                        return;
                     }
+                    location = new Location("providerA");
+                    location.setLatitude(mapTargetLatLng.getLatitude());
+                    location.setLongitude(mapTargetLatLng.getLongitude());
+
+                    cLocation = new Location("providerN");
+                    assert locationComponent.getLastKnownLocation() != null;
+                    cLocation.setLatitude(locationComponent.getLastKnownLocation().getLatitude());
+                    cLocation.setLongitude(locationComponent.getLastKnownLocation().getLongitude());
+
+                    if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        String[] permissionLocation = {Manifest.permission.ACCESS_FINE_LOCATION};
+
+                        requestPermissions(permissionLocation, REQUEST_PERMISSION_LOCATION);
+                    } else {
+                        locationValue = false;
+                        getAddress(location);
+
+                        final Handler handler = new Handler();
+                        handler.postDelayed(() -> {
+                            locationValue = true;
+                            getAddress(cLocation);
+                        }, 3000);
+                    }
+                }
+
+            } else {
+
+                // Switch the button appearance back to select a location.
+                requestbtn.setText(getString(R.string.select_destination));
+                requestbtn.setTextColor(ContextCompat.getColor(requireContext(), R.color.whitePurple));
+
+                // Show the red hovering ImageView marker
+                hoveringMarker.setVisibility(View.VISIBLE);
+
+                // Hide the selected location SymbolLayer
+                if (style.getLayer(DROPPED_MARKER_LAYER_ID) != null) {
+                    requireNonNull(style.getLayer(DROPPED_MARKER_LAYER_ID)).setProperties(visibility(NONE));
+                    removeRequest();
                 }
             }
         });
     }
 
     private void removeRequest() {
-        reference.child("taxiRequest").orderByChild("status").equalTo("waiting").addListenerForSingleValueEvent(new ValueEventListener() {
+        reference.child("taxiRequest").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot child : snapshot.getChildren()) {
-                    String key = child.getKey();
-                    String id = child.child("id").getValue().toString();
-                    if (id.equals(uID)) {
-                        reference.child("taxiRequest").child(key).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    CookieBar.build(getActivity()).setCookiePosition(CookieBar.BOTTOM).setTitle("Ride Request").setMessage("Request Canceled").setDuration(3000).show();
-                                }
+
+                if (snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+
+                        String key = dataSnapshot.getKey();
+                        Object statusValue = dataSnapshot.child("status").getValue();
+                        Object id = dataSnapshot.child("passengerId").getValue();
+
+                        if (String.valueOf(statusValue).equals("waiting")) {
+                            String.valueOf(statusValue);
+                            assert key != null;
+                            if (String.valueOf(id).equals(uID)) {
+                                String.valueOf(id);
+                                reference.child("taxiRequest").child(key).removeValue().addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(getContext(), "Request Canceled", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
-                        });
+                        }
                     }
                 }
             }
@@ -307,15 +400,15 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
                     dGeoLocation = resultData.getString(Constants.DATA_KEY);
                 } else {
 
-                    reference.child("taxiRequest").orderByChild("id").equalTo(uID).addListenerForSingleValueEvent(new ValueEventListener() {
+                    reference.child("taxiRequest").orderByChild("passengerId").equalTo(uID).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if (!snapshot.exists()) {
 
                                 cGeoLocation = resultData.getString(Constants.DATA_KEY);
 
-                                final HashMap<String, Object> sessionMap = new HashMap<>();
-                                sessionMap.put("id", uID);
+                                HashMap<String, Object> sessionMap = new HashMap<>();
+                                sessionMap.put("passengerId", uID);
                                 sessionMap.put("dLocation", dGeoLocation);
                                 sessionMap.put("dlat", String.valueOf(location.getLatitude()));
                                 sessionMap.put("dlng", String.valueOf(location.getLongitude()));
@@ -324,38 +417,42 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
                                 sessionMap.put("clng", String.valueOf(cLocation.getLongitude()));
                                 sessionMap.put("status", "waiting");
 
-                                qr_code_generated_text = generateText(10);
+                                qr_code_generated_text = generateText();
 
-                                reference.child("taxiRequest").child(qr_code_generated_text).updateChildren(sessionMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            reference.child("rideTransaction").child(qr_code_generated_text).addValueEventListener(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                    if (snapshot.exists()) {
+                                reference.child("taxiRequest").child(qr_code_generated_text).updateChildren(sessionMap).addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        reference.child("taxiRequest").child(qr_code_generated_text).addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot1) {
+                                                if (snapshot1.exists()) {
+
+                                                    Object statusValue = snapshot1.child("status").getValue();
+
+                                                    if (String.valueOf(statusValue).equals("accepted")) {
+                                                        String.valueOf(statusValue);
+                                                        Toast.makeText(getContext(), "Ride Accepted", Toast.LENGTH_SHORT).show();
                                                         scanQrCode();
                                                     }
-                                                }
 
-                                                @Override
-                                                public void onCancelled(@NonNull DatabaseError error) {
-                                                    CookieBar.build(getActivity()).setCookiePosition(CookieBar.BOTTOM).setTitle("QR Code").setMessage("Error unable find QR Code").setDuration(3000).show();
                                                 }
-                                            });
-                                        }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                Toast.makeText(getContext(), "Error unable to find QR Code", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
                                     }
                                 });
 
                             } else {
-                                for (DataSnapshot child : snapshot.getChildren()) {
-                                    String statusValue = child.child("status").getValue().toString();
-                                    if (statusValue.equals("waiting")) {
-                                        CookieBar.build(getActivity()).setCookiePosition(CookieBar.BOTTOM).setTitle("Requesting a ride").setMessage("Ride request already in progress...").setDuration(3000).show();
-                                        scanQrCode();
-                                    } else {
-                                        CookieBar.build(getActivity()).setCookiePosition(CookieBar.BOTTOM).setTitle("Requesting a ride").setMessage("Error unknown").setDuration(3000).show();
-                                    }
+                                Object statusValue = snapshot.child("status").getValue();
+
+                                if (String.valueOf(statusValue).equals("accepted")) {
+                                    Toast.makeText(getContext(), "Ride request already in progress...", Toast.LENGTH_SHORT).show();
+                                    scanQrCode();
+                                } else {
+                                    Toast.makeText(getContext(), "Request Completed or already in ride!!!", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }
@@ -371,11 +468,11 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
         }
     }
 
-    private String generateText(int len) {
+    private String generateText() {
         char[] chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890".toCharArray();
         StringBuilder stringBuilder = new StringBuilder();
         Random random = new Random();
-        for (int x = 0; x < len; x++) {
+        for (int x = 0; x < 10; x++) {
             char cha = chars[random.nextInt(chars.length)];
             stringBuilder.append(cha);
         }
@@ -391,11 +488,11 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, code);
         if (result != null) {
             if (result.getContents() == null) {
-                CookieBar.build(getActivity()).setCookiePosition(CookieBar.BOTTOM).setTitle("QR Code").setMessage("Cancelled").setDuration(3000).show();
+                Toast.makeText(getContext(), "Cancelled", Toast.LENGTH_SHORT).show();
             } else {
                 sharedQrCode = result.getContents();
-                CookieBar.build(getActivity()).setCookiePosition(CookieBar.BOTTOM).setTitle("QR Code").setMessage("Scanned").setDuration(3000).show();
                 compareQRCodes();
+                Toast.makeText(getContext(), "Scanned", Toast.LENGTH_SHORT).show();
             }
         } else {
             super.onActivityResult(requestCode, resultCode, code);
@@ -414,28 +511,26 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
                 e.printStackTrace();
             }
 
-            reference.child("rideTransaction").child(qr_code_generated_text).addValueEventListener(new ValueEventListener() {
+            reference.child("taxiRequest").child(qr_code_generated_text).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists()) {
                         String qrCodeDecrypted = snapshot.getKey();
+                        assert qrCodeDecrypted != null;
                         if (qrCodeDecrypted.equals(decrypted_qrCode)) {
-                            final HashMap<String, Object> rideMap = new HashMap<>();
+
+                            HashMap<String, Object> rideMap = new HashMap<>();
                             rideMap.put("status", "riding");
-                            reference.child("rideTransaction").child(qr_code_generated_text).updateChildren(rideMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        Intent intent = new Intent(getContext(), Riding.class);
-                                        startActivity(intent);
-                                    }
+                            reference.child("taxiRequest").child(qr_code_generated_text).updateChildren(rideMap).addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    startRiding();
                                 }
                             });
                         } else {
-                            CookieBar.build(getActivity()).setCookiePosition(CookieBar.BOTTOM).setTitle("QR Code").setMessage("Invalid QR Code please try again!").setDuration(3000).show();
+                            Toast.makeText(getContext(), "Invalid QR Code please try again!", Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        CookieBar.build(getActivity()).setCookiePosition(CookieBar.BOTTOM).setTitle("Ride Request").setMessage("Ride does not exist!").setDuration(3000).show();
+                        Toast.makeText(getContext(), "Ride does not exist!", Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -446,6 +541,100 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
             });
         }
     }
+
+    private void startRiding() {
+        requestbtn.setVisibility(View.INVISIBLE);
+        sharebtn.setVisibility(View.VISIBLE);
+        emgbtn.setVisibility(View.VISIBLE);
+        keyId = qr_code_generated_text;
+
+        ShareAndEmg();
+    }
+
+    private void ShareAndEmg() {
+        sharebtn.setOnClickListener(v -> {
+        //check contacts and share information to contact which will be displayed on a mapview for them
+        });
+
+        emgbtn.setOnClickListener(v -> {
+            //check contacts then if no contacts exist in app and firebase do a 991 call
+        });
+    }
+
+    /**
+     * Set up the LocationEngine and the parameters for querying the device's location
+     */
+    @SuppressLint("MissingPermission")
+    private void initLocationEngine() {
+        LocationEngine locationEngine = LocationEngineProvider.getBestLocationEngine(requireContext());
+
+        LocationEngineRequest request = new LocationEngineRequest.Builder(DEFAULT_INTERVAL_IN_MILLISECONDS)
+                .setPriority(LocationEngineRequest.PRIORITY_HIGH_ACCURACY)
+                .setMaxWaitTime(DEFAULT_MAX_WAIT_TIME).build();
+
+        locationEngine.requestLocationUpdates(request, callback, getMainLooper());
+        locationEngine.getLastLocation(callback);
+    }
+
+
+    private static class RequestRideLocationCallback
+            implements LocationEngineCallback<LocationEngineResult> {
+
+        private final WeakReference<RequestRide> activityWeakReference;
+
+        RequestRideLocationCallback(RequestRide activity) {
+            this.activityWeakReference = new WeakReference<>(activity);
+        }
+
+        /**
+         * The LocationEngineCallback interface's method which fires when the device's location has changed.
+         *
+         * @param result the LocationEngineResult object which has the last known location within it.
+         */
+        @Override
+        public void onSuccess(LocationEngineResult result) {
+            RequestRide activity = activityWeakReference.get();
+
+            if (activity != null) {
+                Location location = result.getLastLocation();
+
+                if (location == null) {
+                    return;
+                }
+
+                // Displays the new location's coordinates
+                String trackLat = String.valueOf(result.getLastLocation().getLatitude());
+                String trackLng = String.valueOf(result.getLastLocation().getLongitude());
+                HashMap<String, Object> locationMap = new HashMap<>();
+                locationMap.put("passengerLocationLat", trackLat);
+                locationMap.put("passengerLocationLng", trackLng);
+
+                String keyId = RequestRide.keyId;
+
+                if (keyId != null) {
+                    FirebaseDatabase.getInstance().getReference().child("realTimeTracking").child(keyId).updateChildren(locationMap).addOnCompleteListener(task -> {
+
+                    });
+                }
+
+                // Pass the new location to the Maps SDK's LocationComponent
+                if (activity.mapboxMap != null && result.getLastLocation() != null) {
+                    activity.mapboxMap.getLocationComponent().forceLocationUpdate(result.getLastLocation());
+                }
+            }
+        }
+
+        /**
+         * The LocationEngineCallback interface's method which fires when the device's location can't be captured
+         *
+         * @param exception the exception message
+         */
+        @Override
+        public void onFailure(@NonNull Exception exception) {
+
+        }
+    }
+
 
     private void initDroppedMarker(@NonNull Style loadedMapStyle) {
         // Add the marker image to map
@@ -463,6 +652,8 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
 
     private void addDestinationIconSymbolLayer(@NonNull Style loadedMapStyle) {
 
+        // variables for calculating and drawing a route
+        String geojsonSourceLayerId = "geojsonSourceLayerId";
         loadedMapStyle.addImage(geojsonSourceLayerId, BitmapFactory.decodeResource(this.getResources(), R.drawable.mapbox_marker_icon_default));
 
         GeoJsonSource geoJsonSource = new GeoJsonSource("destination-source-id");
@@ -499,6 +690,7 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
             // Set the component's render mode
             locationComponent.setRenderMode(RenderMode.COMPASS);
 
+            initLocationEngine();
         } else {
             permissionsManager = new PermissionsManager(this);
             permissionsManager.requestLocationPermissions(getActivity());
@@ -518,12 +710,7 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
     @Override
     public void onPermissionResult(boolean granted) {
         if (granted) {
-            mapboxMap.getStyle(new Style.OnStyleLoaded() {
-                @Override
-                public void onStyleLoaded(@NonNull Style style) {
-                    enableLocationComponent(style);
-                }
-            });
+            mapboxMap.getStyle(this::enableLocationComponent);
         } else {
             Toast.makeText(getContext(), "Permissions Required!", Toast.LENGTH_LONG).show();
             requireActivity().finish();

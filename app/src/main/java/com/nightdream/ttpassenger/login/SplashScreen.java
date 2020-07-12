@@ -1,9 +1,5 @@
 package com.nightdream.ttpassenger.login;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,13 +11,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.nightdream.ttpassenger.NavigationView;
+import com.nightdream.ttpassenger.RideManagement.NavigationView;
+import com.nightdream.ttpassenger.Notification.NotificationScreen;
 import com.nightdream.ttpassenger.R;
 
 public class SplashScreen extends AppCompatActivity {
@@ -63,21 +64,32 @@ public class SplashScreen extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
 
-                        Intent intent = new Intent(SplashScreen.this, NavigationView.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                        finish();
-
+                        if (getIntent().hasExtra("data")) {
+                            Intent intent = new Intent(SplashScreen.this, NotificationScreen.class);
+                            intent.putExtra("data", getIntent().getStringExtra("data"));
+                            startActivity(intent);
+                        } else {
+                            Intent intent = new Intent(SplashScreen.this, NavigationView.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                            finish();
+                        }
                     } else {
                         driverRef.child("Users").child("Passenger").child(uID).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 if (dataSnapshot.exists()) {
 
-                                    Intent intent = new Intent(SplashScreen.this, NavigationView.class);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    startActivity(intent);
-                                    finish();
+                                    if (getIntent().hasExtra("data")) {
+                                        Intent intent = new Intent(SplashScreen.this, NotificationScreen.class);
+                                        intent.putExtra("data", getIntent().getStringExtra("data"));
+                                        startActivity(intent);
+                                    } else {
+                                        Intent intent = new Intent(SplashScreen.this, NavigationView.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        startActivity(intent);
+                                        finish();
+                                    }
 
                                 } else {
                                     Intent intent = new Intent(SplashScreen.this, Register.class);

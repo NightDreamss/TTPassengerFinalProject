@@ -40,7 +40,7 @@ import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.nightdream.ttpassenger.NavigationView;
+import com.nightdream.ttpassenger.RideManagement.NavigationView;
 import com.nightdream.ttpassenger.R;
 import com.squareup.picasso.Picasso;
 

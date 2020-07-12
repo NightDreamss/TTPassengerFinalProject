@@ -67,4 +67,7 @@
     <string name="add_contact">Add Contact</string>
     <string name="back_to_map">Go Back to Ride Request</string>
     <string name="qr_code_image">Qr Code Image</string>
+    <string name="message_information">message information</string>
+    <string name="go_back_to_ttpassenger_app">Go back to ttpassenger App</string>
+    <string name="complete_ride">Complete Ride</string>
 </resources>

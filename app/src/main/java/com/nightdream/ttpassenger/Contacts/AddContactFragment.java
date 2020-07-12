@@ -12,7 +12,6 @@ import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -28,7 +27,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.nightdream.ttpassenger.R;
-
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -254,7 +252,6 @@ public class AddContactFragment extends Fragment {
                 iso = telephonyManager.getNetworkCountryIso();
             }
         }
-        assert iso != null;
         return CountyToPhonePrefix.getPhone(iso);
     }
 

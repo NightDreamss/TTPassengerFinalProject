@@ -1,4 +1,4 @@
-package com.nightdream.ttpassenger;
+package com.nightdream.ttpassenger.RideManagement;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -22,8 +23,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.nightdream.ttpassenger.Contacts.ContactsLayout;
+import com.nightdream.ttpassenger.InterfaceModules.ViewHolder;
+import com.nightdream.ttpassenger.InterfaceModules.requestGetterSetter;
+import com.nightdream.ttpassenger.R;
 
-import java.util.HashMap;
 import java.util.Objects;
 
 public class RideRequests extends Fragment {
@@ -48,8 +51,10 @@ public class RideRequests extends Fragment {
         databaseVariables();
         configureRecyclerView();
         contactPage();
+        checkRideTransactions();
         return rideRequested;
     }
+
 
     private void contactPage() {
         contactBtn.setOnClickListener(v -> {
@@ -84,7 +89,8 @@ public class RideRequests extends Fragment {
     }
 
     private void configureRecyclerView() {
-        FirebaseRecyclerOptions<requestGetterSetter> options = new FirebaseRecyclerOptions.Builder<requestGetterSetter>().setQuery(reference.child("taxiRequest"), requestGetterSetter.class).build();
+        FirebaseRecyclerOptions<requestGetterSetter> options = new FirebaseRecyclerOptions.Builder<requestGetterSetter>().setQuery(reference.child("taxiRequest").orderByChild("status").equalTo("waiting"), requestGetterSetter.class).build();
+
 
         viewHolder = new ViewHolder(options, getContext());
         recyclerView.setAdapter(viewHolder);
@@ -106,21 +112,28 @@ public class RideRequests extends Fragment {
     }
 
     private void checkRideTransactions() {
-        reference.child("taxiRequest").orderByChild("driver").equalTo(uID).addListenerForSingleValueEvent(new ValueEventListener() {
+        reference.child("taxiRequest").orderByChild("driverId").equalTo(uID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
 
-                    String keyId = snapshot.getKey();
-                    Object statusValue = snapshot.child("status").getValue();
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        String keyId = child.getKey();
+                        Object statusValue = child.child("status").getValue();
 
-                    if (String.valueOf(statusValue).equals("accepted")) {
-                        String.valueOf(statusValue);
-                        Intent intent = new Intent(getContext(), QrCodeMap.class);
-                        intent.putExtra("keyId", keyId);
-                        startActivity(intent);
+                        if (String.valueOf(statusValue).equals("accepted")) {
+                            String.valueOf(statusValue);
+                            Intent intent = new Intent(getContext(), QrCodeMap.class);
+                            intent.putExtra("keyId", keyId);
+                            startActivity(intent);
+                            Toast.makeText(getContext(), "Ride request already in progress...", Toast.LENGTH_SHORT).show();
+                        } else if (String.valueOf(statusValue).equals("riding")) {
+                            String.valueOf(statusValue);
+                            Intent intent = new Intent(getContext(), QrCodeMap.class);
+                            intent.putExtra("keyId", keyId);
+                            startActivity(intent);
+                        }
                     }
-
                 }
             }
 
@@ -135,7 +148,6 @@ public class RideRequests extends Fragment {
     public void onStart() {
         super.onStart();
         viewHolder.startListening();
-        checkRideTransactions();
     }
 
     @Override

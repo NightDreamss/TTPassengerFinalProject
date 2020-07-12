@@ -1,4 +1,4 @@
-package com.nightdream.ttpassenger;
+package com.nightdream.ttpassenger.RideManagement;
 
 import android.app.IntentService;
 import android.content.Intent;

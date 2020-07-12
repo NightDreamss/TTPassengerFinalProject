@@ -1,41 +1,44 @@
-package com.nightdream.ttpassenger;
+package com.nightdream.ttpassenger.RideManagement;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.NavigationUI;
-
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.ResultReceiver;
 import android.transition.Fade;
 import android.view.Menu;
 import android.widget.Toast;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.nightdream.ttpassenger.Notification.NotificationScreen;
+import com.nightdream.ttpassenger.Notification.Token;
+import com.nightdream.ttpassenger.R;
 import com.nightdream.ttpassenger.login.Register;
 import com.nightdream.ttpassenger.login.SplashScreen;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class NavigationView extends AppCompatActivity {
 
     private Menu nav_menu;
-    private static final int REQUEST_PERMISSION_CAMERA = 100, REQUEST_PERMISSION_LOCATION = 101, IMAGE_CODE = 200;
-    private String uID, geoLocation;
-    private BottomNavigationView bottomNavigationView;
-    private ResultReceiver receiver;
+    private String uID;
 
     //Firebase
     private FirebaseAuth mAuth;
@@ -47,14 +50,28 @@ public class NavigationView extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); // Make to run your application only in portrait mode
         setContentView(R.layout.navigation_view);
 
+        checkPermissions();
         variables();
         configureNavbar();
+        getToken();
         setupWindowAnimations();
     }
 
-    private void configureNavbar() {
-        nav_menu = bottomNavigationView.getMenu();
+    private void getToken() {
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(NavigationView.this, instanceIdResult -> {
+            String mToken = instanceIdResult.getToken();
+            updateToken(mToken);
+        });
+    }
 
+    public void updateToken(String token) {
+        DatabaseReference tokeRef = FirebaseDatabase.getInstance().getReference("Tokens");
+        Token tokens = new Token(token);
+        tokeRef.child(uID).setValue(tokens);
+
+    }
+
+    private void configureNavbar() {
         if (mAuth.getCurrentUser() == null) {
             Intent intent = new Intent(this, SplashScreen.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -62,16 +79,24 @@ public class NavigationView extends AppCompatActivity {
             finish();
 
         } else {
-
             uID = mAuth.getCurrentUser().getUid();
+
+            SharedPreferences sharedPreferences = getSharedPreferences("Shared_USER", MODE_PRIVATE);
+            @SuppressLint("CommitPrefEdits") SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("Current_USERID", uID);
+            editor.apply();
+
+            if (getIntent().hasExtra("data")) {
+                Intent intent = new Intent(NavigationView.this, NotificationScreen.class);
+                intent.putExtra("data", getIntent().getStringExtra("data"));
+                startActivity(intent);
+            }
 
             reference.child("Users").child("Drivers").child(uID).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
-
-                            nav_menu.findItem(R.id.rideRequests).setVisible(true);
-                            bottomNavigationView.setSelectedItemId(R.id.rideRequests);
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment, new RideRequests()).commit();
 
                     } else {
                         reference.child("Users").child("Passenger").child(uID).addValueEventListener(new ValueEventListener() {
@@ -79,14 +104,14 @@ public class NavigationView extends AppCompatActivity {
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 if (dataSnapshot.exists()) {
 
-                                    nav_menu.findItem(R.id.requestRide).setVisible(true);
-                                    bottomNavigationView.setSelectedItemId(R.id.requestRide);
+                                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment, new RequestRide()).commit();
 
                                 } else {
                                     Intent intent = new Intent(NavigationView.this, Register.class);
                                     startActivity(intent);
                                 }
                             }
+
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
                                 Toast.makeText(NavigationView.this, databaseError.toString(), Toast.LENGTH_LONG).show();
@@ -94,6 +119,7 @@ public class NavigationView extends AppCompatActivity {
                         });
                     }
                 }
+
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                     Toast.makeText(NavigationView.this, databaseError.toString(), Toast.LENGTH_LONG).show();
@@ -123,15 +149,34 @@ public class NavigationView extends AppCompatActivity {
     }
 
     private void variables() {
-
         //firebase variables
         mAuth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference();
+    }
 
-        //variables
-        bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        NavController navController = Navigation.findNavController(this,  R.id.fragment);
-        NavigationUI.setupWithNavController(bottomNavigationView, navController);
+    String[] permissions = new String[]{
+            Manifest.permission.INTERNET,
+            Manifest.permission.CAMERA,
+            Manifest.permission.CALL_PHONE,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+    };
+
+    private void checkPermissions() {
+        int result;
+        List<String> listPermissionsNeeded = new ArrayList<>();
+        for (String p : permissions) {
+            result = ContextCompat.checkSelfPermission(this, p);
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                listPermissionsNeeded.add(p);
+            }
+        }
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), 100);
+        }
     }
 
     protected void setupWindowAnimations() {

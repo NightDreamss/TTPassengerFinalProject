@@ -33,7 +33,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
-import com.nightdream.ttpassenger.NavigationView;
+import com.nightdream.ttpassenger.RideManagement.NavigationView;
 import com.nightdream.ttpassenger.R;
 
 import java.util.concurrent.TimeUnit;

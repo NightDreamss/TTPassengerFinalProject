@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".QrCodeMap">
+    tools:context=".RideManagement.QrCodeMap">
 
     <TextView
         android:id="@+id/qr_code_header"
@@ -89,47 +89,41 @@
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
                 android:text="@string/contacts"
-                android:textSize="20sp" />
+                android:textSize="16sp" />
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/driver_help_button"
-                style="@style/AppTheme.RoundedCornerMaterialButton"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="40dp"
-                android:layout_weight="1"
-                android:paddingStart="10dp"
-                android:paddingTop="10dp"
-                android:paddingEnd="10dp"
-                android:paddingBottom="10dp"
-                android:text="@string/emergency_call"
-                android:textSize="20sp" />
+                android:layout_gravity="bottom|center"
+                android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/driver_share_button"
-                style="@style/AppTheme.RoundedCornerMaterialButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="40dp"
-                android:layout_weight="1"
-                android:paddingStart="10dp"
-                android:paddingTop="10dp"
-                android:paddingEnd="10dp"
-                android:paddingBottom="10dp"
-                android:text="@string/share"
-                android:textSize="20sp" />
-        </LinearLayout>
+                <Button
+                    android:id="@+id/driver_help_button"
+                    style="@style/AppTheme.RoundedCornerMaterialButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="40dp"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:text="@string/emergency_call"
+                    android:textSize="16sp" />
+
+                <Button
+                    android:id="@+id/driver_share_button"
+                    style="@style/AppTheme.RoundedCornerMaterialButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="40dp"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:text="@string/share"
+                    android:textSize="16sp" />
+            </LinearLayout>
 
     </com.mapbox.mapboxsdk.maps.MapView>
 

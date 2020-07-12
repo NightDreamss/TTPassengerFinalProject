@@ -1,7 +1,6 @@
 package com.nightdream.ttpassenger.Contacts;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
@@ -23,8 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -32,7 +29,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.nightdream.ttpassenger.NavigationView;
 import com.nightdream.ttpassenger.R;
 import com.squareup.picasso.Picasso;
 
@@ -74,8 +70,7 @@ public class ContactListFragment extends Fragment {
 
     private void backToMapButton() {
         backToMap.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(), NavigationView.class);
-            startActivity(intent);
+            requireActivity().onBackPressed();
         });
     }
 

@@ -1,6 +1,7 @@
-package com.nightdream.ttpassenger;
+package com.nightdream.ttpassenger.RideManagement;
 
 public class Constants {
+
 
     private static final String APP_PACKAGE_NAME = "com.nightdream.ttpassenger";
     static final String DATA_KEY = APP_PACKAGE_NAME + ".DATA_KEY";

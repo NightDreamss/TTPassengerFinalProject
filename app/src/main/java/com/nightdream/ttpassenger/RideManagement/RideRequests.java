@@ -26,6 +26,7 @@ import com.nightdream.ttpassenger.Contacts.ContactsLayout;
 import com.nightdream.ttpassenger.InterfaceModules.ViewHolder;
 import com.nightdream.ttpassenger.InterfaceModules.requestGetterSetter;
 import com.nightdream.ttpassenger.R;
+import com.nightdream.ttpassenger.login.WelcomeScreen;
 
 import java.util.Objects;
 
@@ -34,7 +35,7 @@ public class RideRequests extends Fragment {
     private View rideRequested;
     private RecyclerView recyclerView;
     private ViewHolder viewHolder;
-    private Button contactBtn;
+    private Button contactBtn, logout;
     private String uID;
     private TextView name, user_type;
 
@@ -61,10 +62,16 @@ public class RideRequests extends Fragment {
             Intent intent = new Intent(getContext(), ContactsLayout.class);
             startActivity(intent);
         });
+        logout.setOnClickListener(v -> {
+            mAuth.signOut();
+            Intent intent = new Intent(requireActivity(), WelcomeScreen.class);
+            startActivity(intent);
+            requireActivity().finish();
+        });
     }
 
     private void databaseVariables() {
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
         DatabaseReference dataReference = FirebaseDatabase.getInstance().getReference();
         String uID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
 
@@ -75,7 +82,6 @@ public class RideRequests extends Fragment {
                 if (dataSnapshot.exists()) {
 
                     Object userName = dataSnapshot.child("name").getValue();
-
                     name.setText(String.valueOf(userName));
                     user_type.setText("Driver");
                 }
@@ -100,6 +106,7 @@ public class RideRequests extends Fragment {
         name = rideRequested.findViewById(R.id.account_name);
         user_type = rideRequested.findViewById(R.id.account_type);
         contactBtn = rideRequested.findViewById(R.id.ride_requested_contacts_button);
+        logout = rideRequested.findViewById(R.id.ride_requested_logout_button);
         recyclerView = rideRequested.findViewById(R.id.ride_requested);
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setHasFixedSize(false);
@@ -107,7 +114,7 @@ public class RideRequests extends Fragment {
 
         //firebase
         reference = FirebaseDatabase.getInstance().getReference();
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         uID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
     }
 
@@ -122,13 +129,11 @@ public class RideRequests extends Fragment {
                         Object statusValue = child.child("status").getValue();
 
                         if (String.valueOf(statusValue).equals("accepted")) {
-                            String.valueOf(statusValue);
                             Intent intent = new Intent(getContext(), QrCodeMap.class);
                             intent.putExtra("keyId", keyId);
                             startActivity(intent);
                             Toast.makeText(getContext(), "Ride request already in progress...", Toast.LENGTH_SHORT).show();
                         } else if (String.valueOf(statusValue).equals("riding")) {
-                            String.valueOf(statusValue);
                             Intent intent = new Intent(getContext(), QrCodeMap.class);
                             intent.putExtra("keyId", keyId);
                             startActivity(intent);

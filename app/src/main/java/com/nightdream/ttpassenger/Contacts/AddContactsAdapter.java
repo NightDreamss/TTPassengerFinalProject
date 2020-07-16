@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import com.nightdream.ttpassenger.R;
 import com.squareup.picasso.Picasso;
 
@@ -78,7 +77,7 @@ public class AddContactsAdapter extends RecyclerView.Adapter<AddContactsAdapter.
         return contactUsers.size();
     }
 
-    public class ContactListViewHolder extends RecyclerView.ViewHolder {
+    public static class ContactListViewHolder extends RecyclerView.ViewHolder {
 
         TextView contact_name, contact_num;
         CircleImageView profile_icon;

@@ -9,10 +9,9 @@ public class CountyToPhonePrefix {
     public static String getPhone(String code) {
         return country2phone.get(code.toUpperCase());
     }
-    public static Map<String, String> getAll(){
-        return country2phone;
-    }
+
     private static Map<String, String> country2phone = new HashMap<>();
+
     static {
         country2phone.put("AC", "+247");
         country2phone.put("AD", "+376");

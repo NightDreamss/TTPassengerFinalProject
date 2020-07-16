@@ -1,5 +1,7 @@
 package com.nightdream.ttpassenger.InterfaceModules;
 
+import android.annotation.SuppressLint;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -20,25 +22,22 @@ public class AESUtils
         byte[] result = decrypt(enc);
         return new String(result);
     }
-    private static byte[] getRawKey() throws Exception {
+    private static byte[] getRawKey() {
         SecretKey key = new SecretKeySpec(keyValue, "AES");
-        byte[] raw = key.getEncoded();
-        return raw;
+        return key.getEncoded();
     }
     private static byte[] encrypt(byte[] raw, byte[] clear) throws Exception {
         SecretKey skeySpec = new SecretKeySpec(raw, "AES");
-        Cipher cipher = Cipher.getInstance("AES");
+        @SuppressLint("GetInstance") Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
-        byte[] encrypted = cipher.doFinal(clear);
-        return encrypted;
+        return cipher.doFinal(clear);
     }
     private static byte[] decrypt(byte[] encrypted)
             throws Exception {
         SecretKey skeySpec = new SecretKeySpec(keyValue, "AES");
-        Cipher cipher = Cipher.getInstance("AES");
+        @SuppressLint("GetInstance") Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, skeySpec);
-        byte[] decrypted = cipher.doFinal(encrypted);
-        return decrypted;
+        return cipher.doFinal(encrypted);
     }
     public static byte[] toByte(String hexString) {
         int len = hexString.length() / 2;
@@ -52,8 +51,8 @@ public class AESUtils
         if (buf == null)
             return "";
         StringBuffer result = new StringBuffer(2 * buf.length);
-        for (int i = 0; i < buf.length; i++) {
-            appendHex(result, buf[i]);
+        for (byte b : buf) {
+            appendHex(result, b);
         }
         return result.toString();
     }

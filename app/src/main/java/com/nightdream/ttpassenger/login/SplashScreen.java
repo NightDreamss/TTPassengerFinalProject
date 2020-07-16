@@ -3,6 +3,7 @@ package com.nightdream.ttpassenger.login;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.transition.Fade;
@@ -21,9 +22,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.nightdream.ttpassenger.RideManagement.NavigationView;
-import com.nightdream.ttpassenger.Notification.NotificationScreen;
 import com.nightdream.ttpassenger.R;
+import com.nightdream.ttpassenger.RideManagement.NavigationView;
 
 public class SplashScreen extends AppCompatActivity {
 
@@ -39,6 +39,7 @@ public class SplashScreen extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference passengerRef;
     private DatabaseReference driverRef;
+    private Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,37 +60,24 @@ public class SplashScreen extends AppCompatActivity {
 
             uID = mAuth.getCurrentUser().getUid();
 
-            passengerRef.child("Users").child("Drivers").child(uID).addValueEventListener(new ValueEventListener() {
+            passengerRef.child("Users").child("Drivers").child(uID).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
 
-                        if (getIntent().hasExtra("data")) {
-                            Intent intent = new Intent(SplashScreen.this, NotificationScreen.class);
-                            intent.putExtra("data", getIntent().getStringExtra("data"));
-                            startActivity(intent);
-                        } else {
                             Intent intent = new Intent(SplashScreen.this, NavigationView.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
                             finish();
-                        }
                     } else {
-                        driverRef.child("Users").child("Passenger").child(uID).addValueEventListener(new ValueEventListener() {
+                        driverRef.child("Users").child("Passenger").child(uID).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 if (dataSnapshot.exists()) {
-
-                                    if (getIntent().hasExtra("data")) {
-                                        Intent intent = new Intent(SplashScreen.this, NotificationScreen.class);
-                                        intent.putExtra("data", getIntent().getStringExtra("data"));
-                                        startActivity(intent);
-                                    } else {
                                         Intent intent = new Intent(SplashScreen.this, NavigationView.class);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                         startActivity(intent);
                                         finish();
-                                    }
 
                                 } else {
                                     Intent intent = new Intent(SplashScreen.this, Register.class);
@@ -116,50 +104,28 @@ public class SplashScreen extends AppCompatActivity {
     private void runSplash() {
 
         if (startApp) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
 
-                    splash_title.animate().alpha(0.0f).setDuration(1000).start();
+            handler.postDelayed(() -> splash_title.animate().alpha(0.0f).setDuration(1000).start(),2000);
 
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
+            handler.postDelayed(() -> {
+                splash_title.setText(getString(R.string.take_passengerTT));
+                splash_title.animate().alpha(1.0f).start();
+            },3000);
 
-                            splash_title.setText(getString(R.string.take_passengerTT));
-                            splash_title.animate().alpha(1.0f).start();
+            handler.postDelayed(() -> logo.animate().alpha(1.0f).setDuration(1000).start(), 5000);
 
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
+            handler.postDelayed(() -> {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                startApp = false;
+                editor.putBoolean("startApp", false);
+                editor.apply();
 
-                                    logo.animate().alpha(1.0f).setDuration(1000).start();
-
-                                    new Handler().postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-
-                                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                                            startApp = false;
-                                            editor.putBoolean("startApp", startApp);
-                                            editor.apply();
-
-                                            shouldFinish = true;
-                                            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(SplashScreen.this);
-                                            Intent intent = new Intent(SplashScreen.this, WelcomeScreen.class);
-                                            startActivity(intent, options.toBundle());
-
-                                        }
-                                    }, 2500);
-                                }
-                            }, 2000);
-                        }
-                    }, 1000);
-
-                }
-            }, 2000);
+                shouldFinish = true;
+                ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(SplashScreen.this);
+                Intent intent = new Intent(SplashScreen.this, WelcomeScreen.class);
+                startActivity(intent, options.toBundle());
+            }, 7500);
         } else {
-
             Intent intent = new Intent(SplashScreen.this, WelcomeScreen.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);

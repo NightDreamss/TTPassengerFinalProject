@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import android.widget.ImageView;
 
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -50,7 +49,8 @@ public class QrCodeDownloader extends AsyncTask<String, Void, Bitmap> {
                 return BitmapFactory.decodeStream(inputStream);
             }
         }catch (Exception e){
-                urlConnection.disconnect();
+            assert urlConnection != null;
+            urlConnection.disconnect();
         }finally {
             if (urlConnection != null){
                 urlConnection.disconnect();

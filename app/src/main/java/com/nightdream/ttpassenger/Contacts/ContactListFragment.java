@@ -41,14 +41,12 @@ import static android.content.Context.MODE_PRIVATE;
 public class ContactListFragment extends Fragment {
 
     private View ContactView;
-    private FloatingActionButton floatingActionButton;
-    private RecyclerView ContactRecycler, ContactRequestRecycler;
+    private RecyclerView ContactRequestRecycler;
     private String currentUserID, contactID;
     private Button backToMap;
 
     //Firebase
     private DatabaseReference requestRef, reference, acceptRef, notificationRef;
-    private FirebaseAuth mAuth;
 
 
     @Nullable
@@ -56,7 +54,7 @@ public class ContactListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ContactView = inflater.inflate(R.layout.fragment_contacts, container, false);
 
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
 
         variables();
@@ -69,9 +67,7 @@ public class ContactListFragment extends Fragment {
     }
 
     private void backToMapButton() {
-        backToMap.setOnClickListener(v -> {
-            requireActivity().onBackPressed();
-        });
+        backToMap.setOnClickListener(v -> requireActivity().onBackPressed());
     }
 
     private void variables() {
@@ -344,9 +340,9 @@ public class ContactListFragment extends Fragment {
 
     private void myContactRecycler() {
         DatabaseReference contactRef = FirebaseDatabase.getInstance().getReference().child("Contacts").child(currentUserID);
-        ContactRecycler = ContactView.findViewById(R.id.contact_list_recycler);
-        ContactRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        ContactRecycler.setNestedScrollingEnabled(false);
+        RecyclerView contactRecycler = ContactView.findViewById(R.id.contact_list_recycler);
+        contactRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+        contactRecycler.setNestedScrollingEnabled(false);
 
         FirebaseRecyclerOptions<Contacts> options = new FirebaseRecyclerOptions.Builder<Contacts>().setQuery(contactRef, Contacts.class).build();
 
@@ -359,7 +355,7 @@ public class ContactListFragment extends Fragment {
                 reference.child("Drivers").child(contactsIds).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()){
+                        if (dataSnapshot.exists()) {
                             if (dataSnapshot.hasChild("image")) {
                                 String id = dataSnapshot.getKey();
                                 Object image = dataSnapshot.child("image").getValue();
@@ -373,8 +369,8 @@ public class ContactListFragment extends Fragment {
                                 contactsViewHolder.itemView.setOnClickListener(v -> {
 
                                     ContactListBottomSheet ContactListBottomSheet = new ContactListBottomSheet();
-                                    FragmentTransaction ft = ((AppCompatActivity) getContext()).getSupportFragmentManager().beginTransaction();
-                                    SharedPreferences.Editor editor = getContext().getSharedPreferences("DeviceToken", MODE_PRIVATE).edit();
+                                    FragmentTransaction ft = ((AppCompatActivity) requireContext()).getSupportFragmentManager().beginTransaction();
+                                    SharedPreferences.Editor editor = requireContext().getSharedPreferences("DeviceToken", MODE_PRIVATE).edit();
                                     editor.putString("ID", id);
                                     editor.putString("name", String.valueOf(name));
                                     editor.putString("image", String.valueOf(image));
@@ -395,7 +391,7 @@ public class ContactListFragment extends Fragment {
                             reference.child("Passenger").child(contactsIds).addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    if (snapshot.exists()){
+                                    if (snapshot.exists()) {
                                         if (snapshot.hasChild("image")) {
                                             String id = snapshot.getKey();
                                             Object image = snapshot.child("image").getValue();
@@ -409,8 +405,8 @@ public class ContactListFragment extends Fragment {
                                             contactsViewHolder.itemView.setOnClickListener(v -> {
 
                                                 ContactListBottomSheet ContactListBottomSheet = new ContactListBottomSheet();
-                                                FragmentTransaction ft = ((AppCompatActivity) getContext()).getSupportFragmentManager().beginTransaction();
-                                                SharedPreferences.Editor editor = getContext().getSharedPreferences("DeviceToken", MODE_PRIVATE).edit();
+                                                FragmentTransaction ft = ((AppCompatActivity) requireContext()).getSupportFragmentManager().beginTransaction();
+                                                SharedPreferences.Editor editor = requireContext().getSharedPreferences("DeviceToken", MODE_PRIVATE).edit();
                                                 editor.putString("ID", id);
                                                 editor.putString("name", String.valueOf(name));
                                                 editor.putString("image", String.valueOf(image));
@@ -453,7 +449,7 @@ public class ContactListFragment extends Fragment {
 
             }
         };
-        ContactRecycler.setAdapter(adapter);
+        contactRecycler.setAdapter(adapter);
         adapter.startListening();
     }
 
@@ -473,9 +469,9 @@ public class ContactListFragment extends Fragment {
 
     private void addContact() {
 
-        floatingActionButton = ContactView.findViewById(R.id.contacts_list_add_contact);
+        FloatingActionButton floatingActionButton = ContactView.findViewById(R.id.contacts_list_add_contact);
         floatingActionButton.setOnClickListener(v -> {
-            TelephonyManager telephonyManager = (TelephonyManager) getActivity().getApplicationContext().getSystemService(getActivity().getApplicationContext().TELEPHONY_SERVICE);
+            TelephonyManager telephonyManager = (TelephonyManager) requireActivity().getApplicationContext().getSystemService(getActivity().getApplicationContext().TELEPHONY_SERVICE);
 
             assert telephonyManager != null;
             if (telephonyManager.getNetworkCountryIso() != null) {

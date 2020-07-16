@@ -22,6 +22,7 @@
             android:layout_marginTop="10dp"
             android:background="@color/whitePurple"
             android:orientation="horizontal"
+            android:layout_gravity="center"
             android:padding="10dp">
 
             <TextView
@@ -44,18 +45,40 @@
 
         </LinearLayout>
 
-        <Button
-            android:id="@+id/ride_requested_contacts_button"
-            style="@style/AppTheme.RoundedCornerMaterialButton"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="10dp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:text="@string/contacts"
-            android:textSize="20sp" />
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
+
+            <Button
+                android:id="@+id/ride_requested_contacts_button"
+                style="@style/AppTheme.RoundedCornerMaterialButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="@string/contacts"
+                android:textSize="20sp" />
+
+            <Button
+                android:id="@+id/ride_requested_logout_button"
+                style="@style/AppTheme.RoundedCornerMaterialButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginStart="10dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="@string/logout"
+                android:textSize="20sp"
+                android:layout_marginEnd="10dp"/>
+
+        </LinearLayout>
+
     </LinearLayout>
 
     <TextView

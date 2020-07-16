@@ -14,8 +14,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -49,7 +47,7 @@ public class ContactListBottomSheet extends BottomSheetDialogFragment {
         userNameText = v.findViewById(R.id.bottomsheet_name);
         databaseName = v.findViewById(R.id.bottomsheet_database_name);
 
-        SharedPreferences prefs = getContext().getSharedPreferences("DeviceToken", MODE_PRIVATE);
+        SharedPreferences prefs = requireContext().getSharedPreferences("DeviceToken", MODE_PRIVATE);
         contactID = prefs.getString("ID", null);
         userName = prefs.getString("name", null);
         userImg = prefs.getString("image", null);

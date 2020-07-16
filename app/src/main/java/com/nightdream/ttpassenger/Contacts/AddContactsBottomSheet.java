@@ -15,8 +15,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -24,7 +22,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import com.nightdream.ttpassenger.R;
 import com.squareup.picasso.Picasso;
 
@@ -60,7 +57,7 @@ public class AddContactsBottomSheet extends BottomSheetDialogFragment {
         userNameText = v.findViewById(R.id.bottomsheet_name);
         databaseName = v.findViewById(R.id.bottomsheet_database_name);
 
-        SharedPreferences prefs = getContext().getSharedPreferences("DeviceToken", MODE_PRIVATE);
+        SharedPreferences prefs = requireContext().getSharedPreferences("DeviceToken", MODE_PRIVATE);
         contactID = prefs.getString("ID", null);
         userName = prefs.getString("name", null);
         userImg = prefs.getString("image", null);
@@ -100,36 +97,35 @@ public class AddContactsBottomSheet extends BottomSheetDialogFragment {
                         SendFriendRequest();
                         dismiss();
                     });
-                }
-                else{
-                  passengerRef.addValueEventListener(new ValueEventListener() {
-                      @SuppressLint("SetTextI18n")
-                      @Override
-                      public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                          if (dataSnapshot.exists()) {
-                              Object databaseNameText = dataSnapshot.child("name").getValue();
+                } else {
+                    passengerRef.addValueEventListener(new ValueEventListener() {
+                        @SuppressLint("SetTextI18n")
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                Object databaseNameText = dataSnapshot.child("name").getValue();
 
-                              userNameText.setText(userName);
-                              databaseName.setText("(" + String.valueOf(databaseNameText) + ")");
+                                userNameText.setText(userName);
+                                databaseName.setText("(" + databaseNameText + ")");
 
-                              if (!userImg.isEmpty()) {
-                                  Picasso.get().load(userImg).fit().placeholder(R.drawable.profile_image).error(R.drawable.profile_image).into(userImage);
-                              } else {
-                                  userImage.setImageResource(R.drawable.profile_image);
-                              }
+                                if (!userImg.isEmpty()) {
+                                    Picasso.get().load(userImg).fit().placeholder(R.drawable.profile_image).error(R.drawable.profile_image).into(userImage);
+                                } else {
+                                    userImage.setImageResource(R.drawable.profile_image);
+                                }
 
-                              sendFriendRequest.setOnClickListener(v -> {
-                                  SendFriendRequest();
-                                  dismiss();
-                              });
-                          }
-                      }
+                                sendFriendRequest.setOnClickListener(v -> {
+                                    SendFriendRequest();
+                                    dismiss();
+                                });
+                            }
+                        }
 
-                      @Override
-                      public void onCancelled(@NonNull DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                      }
-                  });
+                        }
+                    });
                 }
             }
 
@@ -142,24 +138,18 @@ public class AddContactsBottomSheet extends BottomSheetDialogFragment {
     private void SendFriendRequest() {
         requestRef.child(userID).child(contactID).child("contact_request").setValue("sent").addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                requestRef.child(contactID).child(userID).child("contact_request").setValue("received").addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
+                requestRef.child(contactID).child(userID).child("contact_request").setValue("received").addOnCompleteListener(task1 -> {
+                    if (task1.isSuccessful()) {
 
-                            HashMap<String, String> chatnotification = new HashMap<>();
-                            chatnotification.put("from", userID);
-                            chatnotification.put("type", "request");
+                        HashMap<String, String> chatnotification = new HashMap<>();
+                        chatnotification.put("from", userID);
+                        chatnotification.put("type", "request");
 
-                            notificationRef.child(contactID).push().setValue(chatnotification).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        Toast.makeText(context, "Contact request sent to " + userName, Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
-                        }
+                        notificationRef.child(contactID).push().setValue(chatnotification).addOnCompleteListener(task11 -> {
+                            if (task11.isSuccessful()) {
+                                Toast.makeText(context, "Contact request sent to " + userName, Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 });
             }

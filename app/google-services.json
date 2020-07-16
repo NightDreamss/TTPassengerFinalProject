@@ -8,35 +8,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:414551629125:android:d3c151f7044c03df",
-        "android_client_info": {
-          "package_name": "com.nightdream.passengertt"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "414551629125-73qd7ifn4dvoqc41l73fm0gbk3r1af1g.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDGq8tQoc3QkDZa6MaNMLEg_9an31J_FAM"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "414551629125-73qd7ifn4dvoqc41l73fm0gbk3r1af1g.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:414551629125:android:bd3854dc3fb73cae3fb22c",
         "android_client_info": {
           "package_name": "com.nightdream.ttpassenger"

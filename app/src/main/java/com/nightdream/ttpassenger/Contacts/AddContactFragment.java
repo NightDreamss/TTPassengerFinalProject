@@ -40,7 +40,6 @@ public class AddContactFragment extends Fragment {
     private EditText search_contacts;
     private RecyclerView contact_list;
     private RecyclerView.Adapter contact_list_adapter;
-    private RecyclerView.LayoutManager contact_list_layout;
     private ArrayList<Contacts> list, contactsList;
     private RelativeLayout add_contact_backbtn;
     private String userPhoneNumber;
@@ -67,7 +66,7 @@ public class AddContactFragment extends Fragment {
             FragmentManager fragmentManager = getParentFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.mainFragment, contactListFragment);
-            fragmentTransaction.addToBackStack("").commit();
+            fragmentTransaction.commit();
         });
     }
 
@@ -81,7 +80,7 @@ public class AddContactFragment extends Fragment {
         Map<String, List<String>> contacts = new HashMap<>();
 
         String[] projection = {ContactsContract.CommonDataKinds.Phone.CONTACT_ID, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER};
-        Cursor cur = getActivity().getApplicationContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, null, null, ContactsContract.Contacts.DISPLAY_NAME + " ASC");
+        Cursor cur = requireActivity().getApplicationContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, null, null, ContactsContract.Contacts.DISPLAY_NAME + " ASC");
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -245,19 +244,20 @@ public class AddContactFragment extends Fragment {
     private String getCounty() {
         String iso = null;
 
-        TelephonyManager telephonyManager = (TelephonyManager) getActivity().getApplicationContext().getSystemService(getActivity().getApplicationContext().TELEPHONY_SERVICE);
+        TelephonyManager telephonyManager = (TelephonyManager) requireActivity().getApplicationContext().getSystemService(getActivity().getApplicationContext().TELEPHONY_SERVICE);
 
         if (telephonyManager.getNetworkCountryIso() != null) {
             if (!telephonyManager.getNetworkCountryIso().equals("")) {
                 iso = telephonyManager.getNetworkCountryIso();
             }
         }
+        assert iso != null;
         return CountyToPhonePrefix.getPhone(iso);
     }
 
     private void startRecyclerView() {
         contact_list.setNestedScrollingEnabled(false);
-        contact_list_layout = new LinearLayoutManager(getActivity().getApplicationContext(), RecyclerView.VERTICAL, false);
+        RecyclerView.LayoutManager contact_list_layout = new LinearLayoutManager(requireActivity().getApplicationContext(), RecyclerView.VERTICAL, false);
         contact_list.setLayoutManager(contact_list_layout);
         contact_list_adapter = new AddContactsAdapter(contactsList, getContext());
         contact_list.setAdapter(contact_list_adapter);

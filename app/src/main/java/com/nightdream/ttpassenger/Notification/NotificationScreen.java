@@ -1,18 +1,15 @@
 package com.nightdream.ttpassenger.Notification;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.nightdream.ttpassenger.R;
 
 public class NotificationScreen extends AppCompatActivity {
 
-    private Button backbtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,17 +17,14 @@ public class NotificationScreen extends AppCompatActivity {
 
         TextView message = findViewById(R.id.Emgmessage);
 
-        backbtn = findViewById(R.id.back_tomain_app_notification);
+        Button backbtn = findViewById(R.id.back_tomain_app_notification);
 
-        backbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-                finish();
-            }
+        backbtn.setOnClickListener(v -> {
+            onBackPressed();
+            finish();
         });
 
-        if (getIntent().hasExtra("data")){
+        if (getIntent().hasExtra("data")) {
             String emgMessage = getIntent().getStringExtra("data");
             message.setText(emgMessage);
         }

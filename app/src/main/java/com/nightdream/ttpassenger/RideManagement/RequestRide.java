@@ -66,6 +66,7 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.nightdream.ttpassenger.Contacts.ContactsLayout;
 import com.nightdream.ttpassenger.InterfaceModules.AESUtils;
 import com.nightdream.ttpassenger.R;
+import com.nightdream.ttpassenger.login.WelcomeScreen;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -95,16 +96,16 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
     private static final int REQUEST_PERMISSION_LOCATION = 101;
     private RequestQueue requestQueue;
     private View requestRideView;
-    private Button requestbtn, sharebtn, contactbtn, emgbtn, complete;
+    private Button requestbtn, sharebtn, contactbtn, emgbtn, complete, logout;
     private boolean locationValue;
     public static String keyId;
     private Style createStyle;
-    private StringBuilder stringBuilder;
     private Location location, cLocation;
     private String uID, dGeoLocation, cGeoLocation, decrypted_qrCode, sharedQrCode;
     private TextView name, user_type;
     private ResultReceiver receiver;
     private DatabaseReference reference;
+    private FirebaseAuth mAuth;
 
     //Mapbox
     private MapView mapView;
@@ -137,12 +138,18 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
             Intent intent = new Intent(getContext(), ContactsLayout.class);
             startActivity(intent);
         });
+        logout.setOnClickListener(v -> {
+            mAuth.signOut();
+            Intent intent = new Intent(requireActivity(), WelcomeScreen.class);
+            startActivity(intent);
+            requireActivity().finish();
+        });
     }
 
     private void databaseVariables() {
 
         //Firebase
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference();
         uID = requireNonNull(mAuth.getCurrentUser()).getUid();
 
@@ -172,6 +179,7 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
         sharebtn = requestRideView.findViewById(R.id.requestRide_share_button);
         contactbtn = requestRideView.findViewById(R.id.requestRide_contacts_button);
         emgbtn = requestRideView.findViewById(R.id.requestRide_help_button);
+        logout = requestRideView.findViewById(R.id.requestRide_logout_button);
         mapView = requestRideView.findViewById(R.id.mapView);
         complete = requestRideView.findViewById(R.id.requestRide_complete);
         receiver = new AddressResults(new Handler());
@@ -284,10 +292,8 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
                             Object id = dataSnapshot.child("passengerId").getValue();
 
                             if (String.valueOf(statusValue).equals("riding")) {
-                                String.valueOf(statusValue);
                                 assert key != null;
                                 if (String.valueOf(id).equals(uID)) {
-                                    String.valueOf(id);
                                     reference.child("realTimeTracking").child(key).addValueEventListener(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -310,8 +316,9 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
                                         }
                                     });
                                 }
-                            } else {
-                                driverLocation.delete(driverLocationSymbol);
+                            } else if (String.valueOf(statusValue).equals("completed")) {
+                                driverLocationSymbol.setLatLng(new LatLng(11.100, -11.100));
+                                driverLocation.update(driverLocationSymbol);
                             }
                         }
                     }
@@ -380,7 +387,7 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
                     }
                     requireNonNull(style.getLayer(DROPPED_MARKER_LAYER_ID)).setProperties(visibility(VISIBLE));
 
-                    if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
                         return;
                     }
@@ -440,10 +447,8 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
                         Object id = dataSnapshot.child("passengerId").getValue();
 
                         if (String.valueOf(statusValue).equals("waiting")) {
-                            String.valueOf(statusValue);
                             assert key != null;
                             if (String.valueOf(id).equals(uID)) {
-                                String.valueOf(id);
                                 reference.child("taxiRequest").child(key).removeValue().addOnCompleteListener(task -> {
                                     if (task.isSuccessful()) {
                                         Toast.makeText(getContext(), "Request Canceled", Toast.LENGTH_SHORT).show();
@@ -512,7 +517,6 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
                                                     Object statusValue = snapshot1.child("status").getValue();
 
                                                     if (String.valueOf(statusValue).equals("accepted")) {
-                                                        String.valueOf(statusValue);
                                                         Toast.makeText(getContext(), "Ride Accepted", Toast.LENGTH_SHORT).show();
                                                         scanQrCode();
                                                     }
@@ -553,7 +557,6 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
                                                         Object statusValue = snapshot1.child("status").getValue();
 
                                                         if (String.valueOf(statusValue).equals("accepted")) {
-                                                            String.valueOf(statusValue);
                                                             Toast.makeText(getContext(), "Ride Accepted", Toast.LENGTH_SHORT).show();
                                                             scanQrCode();
                                                         }
@@ -585,7 +588,7 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
 
     private String generateText() {
         char[] chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890".toCharArray();
-        stringBuilder = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         Random random = new Random();
         for (int x = 0; x < 10; x++) {
             char cha = chars[random.nextInt(chars.length)];
@@ -604,6 +607,7 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
         if (result != null) {
             if (result.getContents() != null) {
                 sharedQrCode = result.getContents();
+                Toast.makeText(getContext(), sharedQrCode, Toast.LENGTH_SHORT).show();
                 compareQRCodes();
             }
         } else {
@@ -614,7 +618,7 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
     private void compareQRCodes() {
 
         if (!sharedQrCode.isEmpty()) {
-            String decrypted = "";
+            String decrypted;
             decrypted_qrCode = "";
             try {
                 decrypted = AESUtils.decrypt(sharedQrCode);
@@ -661,6 +665,17 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
         complete.setVisibility(View.VISIBLE);
         initLocationEngine();
         ShareAndEmg();
+        symbolStuff();
+    }
+
+    private void symbolStuff() {
+        SymbolManager driverLocation = new SymbolManager(mapView, mapboxMap, createStyle);
+        SymbolManager passengerDestination = new SymbolManager(mapView, mapboxMap, createStyle);
+        if (createStyle.getLayer(DROPPED_MARKER_LAYER_ID) != null) {
+            requireNonNull(createStyle.getLayer(DROPPED_MARKER_LAYER_ID)).setProperties(visibility(NONE));
+            removeRequest();
+        }
+        DriverCurrentLocation(driverLocation, passengerDestination);
     }
 
     class MessageThread extends Thread {
@@ -725,13 +740,7 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
                                                                                     mainObject.put("notification", jsonObject);
 
                                                                                     String URL = "https://fcm.googleapis.com/fcm/send";
-                                                                                    JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, mainObject, new com.android.volley.Response.Listener<JSONObject>() {
-                                                                                        @Override
-                                                                                        public void onResponse(JSONObject response) {
-
-                                                                                            Toast.makeText(getContext(), "Message Sent", Toast.LENGTH_SHORT).show();
-                                                                                        }
-                                                                                    }, error -> {
+                                                                                    JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, mainObject, response -> Toast.makeText(getContext(), "Message Sent", Toast.LENGTH_SHORT).show(), error -> {
 
                                                                                     }) {
                                                                                         @Override
@@ -758,13 +767,7 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
                                                                                     mainObject.put("data", extraObject);
 
                                                                                     String URL = "https://fcm.googleapis.com/fcm/send";
-                                                                                    JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, mainObject, new com.android.volley.Response.Listener<JSONObject>() {
-                                                                                        @Override
-                                                                                        public void onResponse(JSONObject response) {
-
-                                                                                            Toast.makeText(getContext(), "Message Sent", Toast.LENGTH_SHORT).show();
-                                                                                        }
-                                                                                    }, error -> {
+                                                                                    JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, mainObject, response -> Toast.makeText(getContext(), "Message Sent", Toast.LENGTH_SHORT).show(), error -> {
 
                                                                                     }) {
                                                                                         @Override
@@ -944,10 +947,10 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
                     FirebaseDatabase.getInstance().getReference().child("taxiRequest").child(keyId).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if (snapshot.exists()){
+                            if (snapshot.exists()) {
                                 Object status = snapshot.child("status").getValue();
                                 String statusValue = String.valueOf(status);
-                                if (statusValue.equals("riding")){
+                                if (statusValue.equals("riding")) {
                                     FirebaseDatabase.getInstance().getReference().child("realTimeTracking").child(keyId).updateChildren(locationMap).addOnCompleteListener(task -> {
 
                                     });
@@ -1092,10 +1095,6 @@ public class RequestRide extends Fragment implements OnMapReadyCallback, Permiss
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
-    }
-
-    private void PassengerDestination(SymbolManager passengerDestination) {
-
     }
 
     @Override

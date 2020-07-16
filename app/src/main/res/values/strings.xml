@@ -70,4 +70,11 @@
     <string name="message_information">message information</string>
     <string name="go_back_to_ttpassenger_app">Go back to ttpassenger App</string>
     <string name="complete_ride">Complete Ride</string>
+    <string name="login">Login</string>
+    <string name="register">register</string>
+    <string name="welcome_back">Welcome back</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="registration_form">Registration Form</string>
+    <string name="logout">logout</string>
 </resources>

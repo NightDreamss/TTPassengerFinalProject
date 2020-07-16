@@ -1,13 +1,11 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "28.0.3"
+    compileSdkVersion 28
     defaultConfig {
         applicationId "com.nightdream.ttpassenger"
         minSdkVersion 24
-        targetSdkVersion 29
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -45,14 +43,14 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
     //Firebase
-    implementation 'com.google.firebase:firebase-core:17.4.3'
-    implementation 'com.google.firebase:firebase-messaging:20.2.1'
-    implementation 'com.google.firebase:firebase-auth:19.3.1'
+    implementation 'com.google.firebase:firebase-core:17.4.4'
+    implementation 'com.google.firebase:firebase-messaging:20.2.3'
+    implementation 'com.google.firebase:firebase-auth:19.3.2'
     implementation 'com.google.firebase:firebase-database:19.3.1'
     implementation 'com.google.firebase:firebase-storage:19.1.1'
     implementation 'com.firebaseui:firebase-ui-database:4.3.1'
 
-    //Phone Number
+    //Phone Prefix
     implementation 'com.hbb20:ccp:2.2.3'
 
     //Picasso
@@ -84,3 +82,4 @@ dependencies {
     implementation 'com.android.volley:volley:1.1.1'
 
 }
+apply plugin: 'com.google.gms.google-services'

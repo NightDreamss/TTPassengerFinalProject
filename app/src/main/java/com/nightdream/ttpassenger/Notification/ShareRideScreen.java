@@ -1,30 +1,23 @@
 package com.nightdream.ttpassenger.Notification;
 
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
-
-import com.android.volley.toolbox.Volley;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
-import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.geometry.LatLngBounds;
-import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
@@ -56,7 +49,7 @@ public class ShareRideScreen extends AppCompatActivity implements OnMapReadyCall
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share_ride_screen);
 
-        if (getIntent().hasExtra("data")){
+        if (getIntent().hasExtra("data")) {
             keyId = getIntent().getStringExtra("data");
         }
 
@@ -65,12 +58,9 @@ public class ShareRideScreen extends AppCompatActivity implements OnMapReadyCall
     }
 
     private void back() {
-        backbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-                finish();
-            }
+        backbtn.setOnClickListener(v -> {
+            onBackPressed();
+            finish();
         });
     }
 
@@ -141,7 +131,6 @@ public class ShareRideScreen extends AppCompatActivity implements OnMapReadyCall
         @Override
         public void run() {
 
-
             reference.child("realTimeTracking").child(keyId).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -210,6 +199,8 @@ public class ShareRideScreen extends AppCompatActivity implements OnMapReadyCall
         mapView = findViewById(R.id.mapShare);
         mapView.getMapAsync(this);
         backbtn = findViewById(R.id.back_to_main_app_share);
+        permissionsManager = new PermissionsManager(this);
+        permissionsManager.requestLocationPermissions(this);
     }
 
     @Override
@@ -225,7 +216,7 @@ public class ShareRideScreen extends AppCompatActivity implements OnMapReadyCall
     @Override
     public void onPermissionResult(boolean granted) {
         if (granted) {
-
+            Toast.makeText(this, "Shared ride view", Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(this, "Permissions Required!", Toast.LENGTH_LONG).show();
             finish();

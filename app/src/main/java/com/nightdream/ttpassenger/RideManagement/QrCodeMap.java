@@ -2,7 +2,6 @@ package com.nightdream.ttpassenger.RideManagement;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,7 +19,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -74,13 +72,11 @@ public class QrCodeMap extends AppCompatActivity implements OnMapReadyCallback, 
     public static String keyId;
     private TextView qrTitle, name, user_type;
     private Button driverSharebtn, driverEmgbtn, driverContactbtn;
-    private Symbol passengerLocationSymbol;
 
     //map
     private MapView mapView;
     private MapboxMap mapboxMap;
     private PermissionsManager permissionsManager;
-    private LocationComponent locationComponent;
     private LocationEngine locationEngine;
     private static final LatLng BOUND_CORNER_NW = new LatLng(10.854214, -60.880062);
     private static final LatLng BOUND_CORNER_SE = new LatLng(10.033263, -61.957491);
@@ -92,13 +88,11 @@ public class QrCodeMap extends AppCompatActivity implements OnMapReadyCallback, 
 
     //firebase
     private DatabaseReference reference;
-    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mapbox.getInstance(this, getString(R.string.mapboxToken));
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); // Make to run your application only in portrait mode
         setContentView(R.layout.activity_qr_code_map);
 
         variables();
@@ -221,13 +215,7 @@ public class QrCodeMap extends AppCompatActivity implements OnMapReadyCallback, 
                                                                                     mainObject.put("notification", jsonObject);
 
                                                                                     String URL = "https://fcm.googleapis.com/fcm/send";
-                                                                                    JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, mainObject, new com.android.volley.Response.Listener<JSONObject>() {
-                                                                                        @Override
-                                                                                        public void onResponse(JSONObject response) {
-
-                                                                                            Toast.makeText(QrCodeMap.this, "Message Sent", Toast.LENGTH_SHORT).show();
-                                                                                        }
-                                                                                    }, error -> {
+                                                                                    JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, mainObject, response -> Toast.makeText(QrCodeMap.this, "Message Sent", Toast.LENGTH_SHORT).show(), error -> {
 
                                                                                     }) {
                                                                                         @Override
@@ -254,13 +242,7 @@ public class QrCodeMap extends AppCompatActivity implements OnMapReadyCallback, 
                                                                                     mainObject.put("data", extraObject);
 
                                                                                     String URL = "https://fcm.googleapis.com/fcm/send";
-                                                                                    JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, mainObject, new com.android.volley.Response.Listener<JSONObject>() {
-                                                                                        @Override
-                                                                                        public void onResponse(JSONObject response) {
-
-                                                                                            Toast.makeText(QrCodeMap.this, "Message Sent", Toast.LENGTH_SHORT).show();
-                                                                                        }
-                                                                                    }, error -> {
+                                                                                    JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, mainObject, response -> Toast.makeText(QrCodeMap.this, "Message Sent", Toast.LENGTH_SHORT).show(), error -> {
 
                                                                                     }) {
                                                                                         @Override
@@ -336,7 +318,7 @@ public class QrCodeMap extends AppCompatActivity implements OnMapReadyCallback, 
 
     private void databaseVariables() {
         //firebase variables
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         uID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
         reference = FirebaseDatabase.getInstance().getReference();
 
@@ -363,7 +345,7 @@ public class QrCodeMap extends AppCompatActivity implements OnMapReadyCallback, 
 
         assert keyId != null;
         if (!keyId.isEmpty()) {
-            String encrypted = "";
+            String encrypted;
             try {
                 encrypted = AESUtils.encrypt(keyId);
                 encrypted_qrCode = encrypted;
@@ -382,9 +364,7 @@ public class QrCodeMap extends AppCompatActivity implements OnMapReadyCallback, 
                     Object statusValue = snapshot.child("status").getValue();
 
                     if (String.valueOf(statusValue).equals("riding")) {
-                        String.valueOf(statusValue);
                         if (String.valueOf(driverId).equals(uID)) {
-                            String.valueOf(driverId);
                             mapData();
                         }
                     }
@@ -450,7 +430,6 @@ public class QrCodeMap extends AppCompatActivity implements OnMapReadyCallback, 
             implements LocationEngineCallback<LocationEngineResult> {
 
         private final WeakReference<QrCodeMap> activityWeakReference;
-        private String trackLat, trackLng;
 
         QrCodeMapLocationCallback(QrCodeMap activity) {
             this.activityWeakReference = new WeakReference<>(activity);
@@ -473,8 +452,8 @@ public class QrCodeMap extends AppCompatActivity implements OnMapReadyCallback, 
                 }
 
                 // Displays the new location's coordinates
-                trackLat = String.valueOf(result.getLastLocation().getLatitude());
-                trackLng = String.valueOf(result.getLastLocation().getLongitude());
+                String trackLat = String.valueOf(result.getLastLocation().getLatitude());
+                String trackLng = String.valueOf(result.getLastLocation().getLongitude());
                 HashMap<String, Object> locationMap = new HashMap<>();
                 locationMap.put("driverLocationLat", trackLat);
                 locationMap.put("driverLocationLng", trackLng);
@@ -482,14 +461,7 @@ public class QrCodeMap extends AppCompatActivity implements OnMapReadyCallback, 
                 String keyId = QrCodeMap.keyId;
 
                 if (keyId != null) {
-                    FirebaseDatabase.getInstance().getReference().child("realTimeTracking").child(keyId).updateChildren(locationMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-
-                            }
-                        }
-                    });
+                    FirebaseDatabase.getInstance().getReference().child("realTimeTracking").child(keyId).updateChildren(locationMap).addOnCompleteListener(Task::isSuccessful);
                 }
 
                 // Pass the new location to the Maps SDK's LocationComponent
@@ -614,7 +586,7 @@ public class QrCodeMap extends AppCompatActivity implements OnMapReadyCallback, 
 
         Float[] f = {0.f, 1.5f};
 
-        passengerLocationSymbol = passengerLocation.create(new SymbolOptions()
+        Symbol passengerLocationSymbol = passengerLocation.create(new SymbolOptions()
                 .withLatLng(new LatLng(11.00, -11.00))
                 .withIconImage(ID_ICON_PASSENGER_LOCATION)
                 .withTextField("Passenger Location")
@@ -634,7 +606,7 @@ public class QrCodeMap extends AppCompatActivity implements OnMapReadyCallback, 
                     Object lng = snapshot.child("dlng").getValue();
                     String sLng = String.valueOf(lng);
 
-                    Symbol symbol = passengerDestination.create(new SymbolOptions()
+                    passengerDestination.create(new SymbolOptions()
                             .withLatLng(new LatLng(Double.parseDouble(sLat), Double.parseDouble(sLng)))
                             .withIconImage(ID_ICON_PASSENGER_DESTINATION)
                             .withTextField("Destination")
@@ -661,7 +633,7 @@ public class QrCodeMap extends AppCompatActivity implements OnMapReadyCallback, 
             // Adding in LocationComponentOptions is also an optional parameter
 
             // Get an instance of the component
-            locationComponent = mapboxMap.getLocationComponent();
+            LocationComponent locationComponent = mapboxMap.getLocationComponent();
 
             // Activate with a built LocationComponentActivationOptions object
             locationComponent.activateLocationComponent(LocationComponentActivationOptions.builder(this, loadedMapStyle).build());

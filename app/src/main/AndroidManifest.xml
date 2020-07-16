@@ -23,40 +23,52 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:configChanges="orientation"
         android:screenOrientation="portrait"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".Notification.ShareRideScreen"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Notification.NotificationScreen"
-            android:screenOrientation="portrait"/>
+        android:theme="@style/AppTheme"
+        android:allowBackup="true"
+        tools:ignore="AllowBackup">
+        <activity
+            android:name=".Notification.ShareRideScreen"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Notification.NotificationScreen"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Contacts.ContactsLayout"
+            android:configChanges="orientation"
             android:screenOrientation="portrait" />
         <activity
             android:name=".RideManagement.QrCodeMap"
+            android:configChanges="orientation"
             android:screenOrientation="portrait" />
 
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyD5S4QPKgZE7QYeypMF5SUy_I0Bz3_da0I" />
-
-        <activity android:name=".RideManagement.NavigationView"
-            android:screenOrientation="portrait"/>
         <activity
-            android:name="com.google.firebase.auth.internal.FederatedSignInActivity"
-            android:launchMode="standard"
-            tools:replace="android:launchMode" />
-        <activity android:name=".login.VerifyPhoneNumber" />
-        <activity android:name=".login.PhoneNumber" />
-        <activity android:name=".login.Register" />
-        <activity android:name=".login.WelcomeScreen">
+            android:name=".RideManagement.NavigationView"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".login.Login"
+            android:windowSoftInputMode="adjustPan"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".login.Register"
+            android:windowSoftInputMode="adjustPan"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".login.WelcomeScreen"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
             <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
         <activity
             android:name=".login.SplashScreen"
+            android:configChanges="orientation"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

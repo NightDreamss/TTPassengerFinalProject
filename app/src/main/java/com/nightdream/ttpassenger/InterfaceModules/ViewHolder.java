@@ -18,8 +18,8 @@ import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.nightdream.ttpassenger.RideManagement.QrCodeMap;
 import com.nightdream.ttpassenger.R;
+import com.nightdream.ttpassenger.RideManagement.QrCodeMap;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -82,7 +82,7 @@ public class ViewHolder extends FirebaseRecyclerAdapter<requestGetterSetter, Vie
             DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
-                        transaction(v);
+                        transaction();
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
@@ -97,7 +97,7 @@ public class ViewHolder extends FirebaseRecyclerAdapter<requestGetterSetter, Vie
         }
     }
 
-    private void transaction(View v) {
+    private void transaction() {
         final HashMap<String, Object> sessionMap = new HashMap<>();
         sessionMap.put("driverId", uID);
         sessionMap.put("status", "accepted");

@@ -45,7 +45,7 @@ public class TheAddress extends IntentService {
             } else {
                 Address address = addressList.get(0);
                 ArrayList<String> addressFragment = new ArrayList<>();
-                for(int i = 0; i <= address.getMaxAddressLineIndex(); i++){
+                for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
                     addressFragment.add(address.getAddressLine(i));
                 }
                 ReceiverResults(Constants.SUCCESS, TextUtils.join(Objects.requireNonNull(System.getProperty("line.separator")), addressFragment));
